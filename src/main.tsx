@@ -78,10 +78,6 @@ function SiteFooter() {
             <img className="brand-icon" src={brandIconUrl} alt="" />
             <span>Fin<span className="brand-accent">States</span></span>
           </a>
-          <address>
-            <strong>{site.operator}</strong>
-            {site.address.map((line) => <span key={line}>{line}</span>)}
-          </address>
           <a className="footer-email" href={`mailto:${site.email}`}>{site.email}</a>
         </div>
         <FooterColumn title="Product">
