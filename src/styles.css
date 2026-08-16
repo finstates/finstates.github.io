@@ -395,6 +395,7 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
 /* Footer keeps operator and legal information available without competing with product content. */
 .site-footer { padding-top: clamp(var(--space-20), 8vw, var(--space-28)); border-top: var(--border-width-hairline) solid var(--color-border-subtle); background: #f8fafc; }
 .footer-main { display: grid; grid-template-columns: minmax(19rem, 1.7fr) repeat(3, minmax(9rem, 0.75fr)); gap: var(--space-12); padding-bottom: var(--space-20); }
+.footer-company { display: flex; flex-direction: column; align-items: flex-start; }
 .footer-brand .brand-icon { width: 2.25rem; height: 2.25rem; }
 .footer-email { display: inline-block; margin-top: var(--space-4); color: var(--color-link); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
 .footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); color: var(--color-text-muted); font-size: var(--font-size-sm); }
