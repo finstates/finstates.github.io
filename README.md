@@ -28,5 +28,12 @@ Signed desktop apps will be published on **GitHub Releases** — macOS first, Wi
 ## Links
 
 - Website: https://finstates.app
+- Support and company information: https://finstates.app/support/
+- Privacy notice: https://finstates.app/privacy/
+- Website terms: https://finstates.app/terms/
 - This repository hosts the public website (GitHub Pages) and release downloads; the application source code is private.
 - License: commercial software — free for personal use, commercial use requires a license (details at launch).
+
+## Company
+
+FinStates is developed and operated by **Shenzhen Little Fish Cat Technology Co., Ltd.**, Shenzhen, Guangdong, China.
