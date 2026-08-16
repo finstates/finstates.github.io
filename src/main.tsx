@@ -1,4 +1,4 @@
-import { StrictMode, type ReactNode } from "react";
+import { StrictMode, type ReactNode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import brandIconUrl from "./assets/icon-only.png";
 import "./design-tokens.css";
@@ -11,43 +11,21 @@ const site = {
   address: [
     "Room 2301, Building A3, Tianfu Huafu (Zone A)",
     "Lijin Community, Hangcheng Subdistrict, Bao'an District",
-    "Shenzhen, Guangdong, China",
+    "Shenzhen, Guangdong 050300, China",
   ],
 } as const;
 
-const principles = [
-  {
-    number: "01",
-    title: "Local-first by design",
-    text: "Workspaces and their long-lived financial data live on the user's device. Local work remains available without a platform account or cloud service.",
-  },
-  {
-    number: "02",
-    title: "Evidence stays attached",
-    text: "Facts retain source locators and XBRL context so a reviewer can move from a value back to the report evidence that supports it.",
-  },
-  {
-    number: "03",
-    title: "History is immutable",
-    text: "Corrections create new versions instead of overwriting prior work. Tasks keep the exact dataset version used for each result.",
-  },
-  {
-    number: "04",
-    title: "Professional workflows",
-    text: "FinStates ships fixed, validated Tasks for specific work. Users review professional results without assembling generic automation nodes.",
-  },
-] as const;
-
-const audiences = [
-  "Accounting firms",
-  "Accountants",
-  "Company secretaries",
-  "Corporate finance teams",
+const taskSteps = [
+  ["01", "Extract", "Read the complete report and confirm its filing scope."],
+  ["02", "Prepare", "Review tables, Concepts, values and source evidence."],
+  ["03", "Validate", "Run ACRA structure and business-rule checks."],
+  ["04", "Preview", "Inspect the exact fixed filing result before delivery."],
+  ["05", "Export", "Save the validated ACRA five-file ZIP package."],
 ] as const;
 
 function syncDocumentThemeColor() {
   const token = getComputedStyle(document.documentElement)
-    .getPropertyValue("--color-brand-primary")
+    .getPropertyValue("--color-surface-canvas")
     .trim();
   let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
   if (!meta) {
@@ -59,42 +37,80 @@ function syncDocumentThemeColor() {
 }
 
 function SiteHeader() {
+  const [compact, setCompact] = useState(false);
+
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => setCompact(window.scrollY > 96));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", update);
+    };
+  }, []);
+
   return (
-    <header className="site-header page-width">
-      <a className="brand" href="/" aria-label="FinStates home">
-        <img className="brand-icon" src={brandIconUrl} alt="" />
-        <span>Fin<span className="brand-accent">States</span></span>
-      </a>
-      <nav className="site-nav" aria-label="Primary navigation">
-        <a href="/#product">Product</a>
-        <a href="/#approach">Approach</a>
-        <a href="/#company">Company</a>
-        <a href="/support/">Support</a>
-      </nav>
-    </header>
+    <div className="header-rail">
+      <header className="site-header" data-compact={compact}>
+        <a className="brand" href="/" aria-label="FinStates home">
+          <img className="brand-icon" src={brandIconUrl} alt="" />
+          <span>Fin<span className="brand-accent">States</span></span>
+        </a>
+        <a className="header-status" href="/#status">
+          <span className="status-dot" aria-hidden="true" />
+          Development status
+        </a>
+      </header>
+    </div>
   );
 }
 
 function SiteFooter() {
   return (
     <footer className="site-footer">
-      <div className="page-width footer-grid">
+      <div className="page-width footer-main">
         <div className="footer-company">
           <a className="brand footer-brand" href="/" aria-label="FinStates home">
             <img className="brand-icon" src={brandIconUrl} alt="" />
             <span>Fin<span className="brand-accent">States</span></span>
           </a>
-          <p>{site.name} is developed and operated by {site.operator}</p>
+          <address>
+            <strong>{site.operator}</strong>
+            {site.address.map((line) => <span key={line}>{line}</span>)}
+          </address>
+          <a className="footer-email" href={`mailto:${site.email}`}>{site.email}</a>
         </div>
-        <nav className="footer-links" aria-label="Footer navigation">
-          <a href="/#company">Company</a>
-          <a href="/support/">Support</a>
+        <FooterColumn title="Product">
+          <a href="/#workflow">ACRA workflow</a>
+          <a href="/#evidence">Evidence and control</a>
+          <a href="/#status">Development status</a>
+        </FooterColumn>
+        <FooterColumn title="Company">
+          <a href="/support/">Support and contact</a>
+          <a href={`mailto:${site.email}`}>Email</a>
+        </FooterColumn>
+        <FooterColumn title="Legal">
           <a href="/privacy/">Privacy</a>
           <a href="/terms/">Terms</a>
-        </nav>
-        <p className="footer-meta">© 2026 {site.operator}</p>
+        </FooterColumn>
+      </div>
+      <div className="page-width footer-bottom">
+        <p>© 2026 {site.operator}. All rights reserved.</p>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <nav className="footer-column" aria-label={`${title} links`}>
+      <strong>{title}</strong>
+      {children}
+    </nav>
   );
 }
 
@@ -109,38 +125,90 @@ function PageFrame({ children }: { children: ReactNode }) {
   );
 }
 
-function WorkflowCard() {
+function ProductWindow({ compact = false }: { compact?: boolean }) {
   return (
-    <div className="workflow-card" aria-label="FinStates product workflow">
-      <div className="workflow-brand">
-        <img src={brandIconUrl} alt="" />
-        <span>FinStates workflow</span>
+    <div className={`product-window${compact ? " product-window-compact" : ""}`} aria-label="FinStates ACRA Workbench preview">
+      <div className="window-bar">
+        <div className="window-dots" aria-hidden="true"><span /><span /><span /></div>
+        <strong>FinStates · ACRA Workbench</strong>
+        <span className="window-badge">Local workspace</span>
       </div>
-      <ol>
-        <li><span>01</span><strong>Source evidence</strong><small>Financial reports remain traceable to their origin.</small></li>
-        <li><span>02</span><strong>Reusable XBRL Facts</strong><small>Structured data keeps its complete business context.</small></li>
-        <li><span>03</span><strong>Professional Tasks</strong><small>Fixed workflows produce reviewable results and artifacts.</small></li>
-      </ol>
+      <div className="window-body">
+        <div className="source-pane">
+          <div className="pane-heading"><strong>Source PDF</strong><span>Page 18 / 32</span></div>
+          <div className="source-document">
+            <span className="document-kicker">Note 17</span>
+            <strong>Revenue</strong>
+            <div className="document-rule" />
+            <div className="document-row"><span>Rendering of services</span><b>4,261</b></div>
+            <div className="document-row document-row-active"><span>Subscription revenue</span><b>1,842</b></div>
+            <div className="document-row"><span>Other revenue</span><b>286</b></div>
+            <div className="document-total"><span>Total</span><b>6,389</b></div>
+          </div>
+          <p className="evidence-caption"><span /> Evidence locator attached</p>
+        </div>
+        <div className="task-pane">
+          <ol className="window-steps" aria-label="ACRA workflow steps">
+            {taskSteps.map(([number, label], index) => (
+              <li className={index === 2 ? "is-active" : index < 2 ? "is-complete" : ""} key={number}>
+                <span>{number}</span><small>{label}</small>
+              </li>
+            ))}
+          </ol>
+          <div className="task-summary">
+            <div><span>Validation</span><strong>Review issues</strong></div>
+            <span className="result-badge">3 checks</span>
+          </div>
+          <div className="validation-list">
+            <div><span className="check-icon">✓</span><p><strong>Taxonomy package</strong><small>ACRA 2026 release fixed</small></p></div>
+            <div><span className="check-icon">✓</span><p><strong>Calculation relationships</strong><small>No blocking inconsistency</small></p></div>
+            <div className="validation-review"><span className="review-icon">!</span><p><strong>Professional review</strong><small>One item requires confirmation</small></p></div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-function FactModel() {
+function Hero() {
+  const handlePointerMove = (event: React.PointerEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--pointer-x", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--pointer-y", `${event.clientY - rect.top}px`);
+  };
+
   return (
-    <div className="fact-model" aria-label="Example XBRL Fact context">
-      <div className="fact-model-heading">
-        <span className="fact-status">Evidence linked</span>
-        <strong>Revenue</strong>
+    <section className="hero" id="product" aria-labelledby="page-title" onPointerMove={handlePointerMove}>
+      <div className="hero-grid" aria-hidden="true" />
+      <div className="hero-glow" aria-hidden="true" />
+      <div className="page-width hero-layout">
+        <div className="hero-copy">
+          <a className="announcement" href="#status">
+            <span>In development</span>
+            ACRA 2026 end-to-end filing workflow
+            <b aria-hidden="true">→</b>
+          </a>
+          <h1 id="page-title">From financial report to reviewable ACRA filing.</h1>
+          <p>
+            A local-first desktop workspace for Singapore accounting professionals.
+            Keep every XBRL Fact connected to its evidence, validation and exact data version.
+          </p>
+        </div>
+        <div className="hero-actions">
+          <a className="action-card" href="#workflow">
+            <strong>Explore the workflow</strong>
+            <span>PDF to validated five-file ZIP</span>
+            <b aria-hidden="true">↗</b>
+          </a>
+          <a className="action-card" href="#status">
+            <strong>Development status</strong>
+            <span>See what is implemented and what remains</span>
+            <b aria-hidden="true">↗</b>
+          </a>
+        </div>
+        <div className="hero-visual"><ProductWindow /></div>
       </div>
-      <dl>
-        <div><dt>Entity</dt><dd>Reporting company</dd></div>
-        <div><dt>Period</dt><dd>Financial year</dd></div>
-        <div><dt>Unit</dt><dd>Reporting currency</dd></div>
-        <div><dt>Taxonomy</dt><dd>Controlled release</dd></div>
-        <div><dt>Dimensions</dt><dd>Business context</dd></div>
-        <div><dt>Evidence</dt><dd>Source locator</dd></div>
-      </dl>
-    </div>
+    </section>
   );
 }
 
@@ -148,122 +216,74 @@ function HomePage() {
   return (
     <PageFrame>
       <main id="main-content">
-        <section className="hero page-width" id="product" aria-labelledby="page-title">
-          <div className="hero-copy">
-            <p className="eyebrow">Local-first XBRL workspace</p>
-            <h1 id="page-title">Financial facts that stay useful.</h1>
-            <p className="intro">
-              FinStates turns financial reports into evidence-backed XBRL Facts
-              that professionals can review, maintain and reuse across filing,
-              research and analysis work.
-            </p>
-            <div className="hero-actions">
-              <a className="button button-primary" href="#approach">Explore the product</a>
-              <a className="button button-secondary" href="#company">Company information</a>
-            </div>
-            <p className="development-note">
-              <span className="status-dot" aria-hidden="true" />
-              Desktop application in active development
-            </p>
+        <Hero />
+
+        <section className="section page-width" aria-labelledby="result-title">
+          <div className="section-heading">
+            <p className="eyebrow">The professional result</p>
+            <h2 id="result-title">One filing result, with the work behind it still intact.</h2>
+            <p>A filing package is only useful when a professional can inspect how it was produced and return to the exact source evidence.</p>
           </div>
-          <WorkflowCard />
-        </section>
-
-        <aside className="trust-strip" aria-label="Product characteristics">
-          <ul className="page-width">
-            <li><strong>Local-first</strong><span>User-controlled workspaces</span></li>
-            <li><strong>Traceable</strong><span>Evidence attached to Facts</span></li>
-            <li><strong>Versioned</strong><span>History is never overwritten</span></li>
-          </ul>
-        </aside>
-
-        <section className="section page-width split-section" id="approach" aria-labelledby="approach-title">
-          <div className="section-copy">
-            <p className="eyebrow">Facts first</p>
-            <h2 id="approach-title">Build durable data once. Reuse it for real work.</h2>
-            <p>
-              A financial value is only useful when its meaning travels with it.
-              FinStates keeps the concept, entity, period, unit, dimensions,
-              taxonomy and source evidence together as one reviewable Fact.
-            </p>
-            <p>
-              Users maintain Facts as long-lived data. Each Task fixes an exact
-              dataset version, follows a defined professional workflow and
-              produces a result without taking ownership of the underlying data.
-            </p>
-          </div>
-          <FactModel />
-        </section>
-
-        <section className="section section-tonal" aria-labelledby="task-title">
-          <div className="page-width task-layout">
-            <div className="section-copy">
-              <p className="eyebrow">First workflow in development</p>
-              <h2 id="task-title">ACRA 2026 Simplified XBRL filing</h2>
-              <p>
-                FinStates is currently validating an end-to-end desktop workflow
-                for Singapore accounting firms, accountants, company secretaries
-                and finance teams preparing ACRA Simplified XBRL filings.
-              </p>
-              <p className="status-copy">
-                This workflow is under active development and is not yet publicly released.
-              </p>
-            </div>
-            <ol className="task-steps">
-              <li><span>01</span><div><strong>Start from the report</strong><p>Identify the company, reporting period and applicable filing regime from supplied material.</p></div></li>
-              <li><span>02</span><div><strong>Review Facts and evidence</strong><p>Keep report values connected to controlled taxonomy concepts and source locators.</p></div></li>
-              <li><span>03</span><div><strong>Validate and prepare delivery</strong><p>Run defined checks and prepare reviewable filing artifacts through the Task workflow.</p></div></li>
-            </ol>
+          <div className="result-grid">
+            <article><span>01</span><strong>Validated filing</strong><p>ACRA structure, calculation and business-rule checks run against one fixed dataset.</p></article>
+            <article><span>02</span><strong>Evidence-backed Facts</strong><p>Values retain the report locator, period, unit, dimensions and controlled taxonomy identity.</p></article>
+            <article><span>03</span><strong>Five-file delivery</strong><p>Preview the filing result, pass the final gate and save the ACRA five-file ZIP package.</p></article>
           </div>
         </section>
 
-        <section className="section page-width" aria-labelledby="principles-title">
-          <div className="section-heading-row">
-            <div>
-              <p className="eyebrow">Product principles</p>
-              <h2 id="principles-title">Professional work needs a trustworthy foundation.</h2>
+        <section className="section workflow-section" id="workflow" aria-labelledby="workflow-title">
+          <div className="page-width workflow-layout">
+            <div className="workflow-copy">
+              <p className="eyebrow">A fixed professional workflow</p>
+              <h2 id="workflow-title">Five steps from one complete PDF.</h2>
+              <ol className="workflow-nav">
+                {taskSteps.map(([number, label, description]) => (
+                  <li key={number}><span>{number}</span><div><strong>{label}</strong><p>{description}</p></div></li>
+                ))}
+              </ol>
             </div>
-            <p>FinStates separates long-lived financial data from the Tasks that use it.</p>
-          </div>
-          <div className="principle-grid">
-            {principles.map((principle) => (
-              <article className="principle-card" key={principle.number}>
-                <span>{principle.number}</span>
-                <h3>{principle.title}</h3>
-                <p>{principle.text}</p>
-              </article>
-            ))}
+            <div className="workflow-preview"><ProductWindow compact /></div>
           </div>
         </section>
 
-        <section className="section section-brand" aria-labelledby="audience-title">
-          <div className="page-width audience-layout">
-            <div>
-              <p className="eyebrow eyebrow-on-brand">Built for financial professionals</p>
-              <h2 id="audience-title">Clear review paths for work where context matters.</h2>
-            </div>
-            <ul>
-              {audiences.map((audience) => <li key={audience}>{audience}</li>)}
-            </ul>
+        <section className="section page-width" id="evidence" aria-labelledby="evidence-title">
+          <div className="section-heading section-heading-wide">
+            <div><p className="eyebrow">Evidence and control</p><h2 id="evidence-title">Automation that leaves professional judgment visible.</h2></div>
+            <p>FinStates can help identify report structure and Concepts. It does not silently invent missing values, units, periods or source evidence.</p>
+          </div>
+          <div className="control-grid">
+            <article className="control-card evidence-card">
+              <div className="control-card-top"><span>Source → Fact</span><b>Open evidence</b></div>
+              <div className="evidence-flow"><div><small>PDF page</small><strong>Note 17 · Revenue</strong></div><span>→</span><div><small>XBRL Fact</small><strong>Revenue · SGD 6,389k</strong></div></div>
+              <p>A reviewer can move from the structured Fact back to its source page and locator.</p>
+            </article>
+            <article className="control-card version-card">
+              <div className="control-card-top"><span>Dataset history</span><b>Current · v4</b></div>
+              <div className="version-line"><i /><i /><i /><i className="is-current" /></div>
+              <div className="version-labels"><span>Imported</span><span>Prepared</span><span>Reviewed</span><span>Current</span></div>
+              <p>Corrections create a new immutable version. Prior Tasks and results keep their exact original inputs.</p>
+            </article>
           </div>
         </section>
 
-        <section className="section page-width company-section" id="company" aria-labelledby="company-title">
-          <div className="company-card">
-            <div className="company-copy">
-              <p className="eyebrow">Company</p>
-              <h2 id="company-title">FinStates is developed and operated by {site.operator}</h2>
-              <p>
-                We are a technology company based in Shenzhen, China, building
-                local-first software for structured financial data and professional XBRL workflows.
-              </p>
-              <a className="text-link" href="/support/">Contact and support information <span aria-hidden="true">→</span></a>
+        <section className="section page-width" aria-labelledby="reuse-title">
+          <div className="reuse-panel">
+            <div className="reuse-copy"><p className="eyebrow">Built for repeat professional work</p><h2 id="reuse-title">Process companies independently. Reuse their financial data later.</h2></div>
+            <div className="reuse-grid">
+              <article><span>Batch</span><strong>Multiple reports, isolated Tasks</strong><p>Each company keeps its own source, run, issues, usage, result and delivery.</p></article>
+              <article><span>Financials</span><strong>Long-lived client Facts</strong><p>Reviewed data remains in the local workspace for later filing, research and analysis Tasks.</p></article>
             </div>
-            <address>
-              <span>Registered office</span>
-              {site.address.map((line) => <div key={line}>{line}</div>)}
-              <a href={`mailto:${site.email}`}>{site.email}</a>
-            </address>
+          </div>
+        </section>
+
+        <section className="section page-width" id="status" aria-labelledby="status-title">
+          <div className="status-panel">
+            <div><p className="eyebrow">Development status</p><h2 id="status-title">The first workflow is being validated end to end.</h2></div>
+            <div className="status-detail">
+              <p>FinStates Desktop and the ACRA 2026 XBRL filing Task are in active development and are not yet publicly released.</p>
+              <p>Public downloads will appear here only after the release has completed product validation, signing and publication.</p>
+              <a href="/support/">Contact FinStates <span aria-hidden="true">→</span></a>
+            </div>
           </div>
         </section>
       </main>
@@ -271,14 +291,11 @@ function HomePage() {
   );
 }
 
-function ContentPage({ eyebrow, title, children }: { eyebrow: string; title: string; children: ReactNode }) {
+function ContentPage({ label, title, children }: { label: string; title: string; children: ReactNode }) {
   return (
     <PageFrame>
       <main id="main-content" className="content-page page-width">
-        <header className="content-page-header">
-          <p className="eyebrow">{eyebrow}</p>
-          <h1>{title}</h1>
-        </header>
+        <header className="content-page-header"><p className="eyebrow">{label}</p><h1>{title}</h1></header>
         <div className="prose">{children}</div>
       </main>
     </PageFrame>
@@ -287,127 +304,44 @@ function ContentPage({ eyebrow, title, children }: { eyebrow: string; title: str
 
 function SupportPage() {
   return (
-    <ContentPage eyebrow="Contact" title="Support and company enquiries">
-      <p className="prose-lead">
-        FinStates is in active development and is not yet available for public download.
-        We welcome product, business, security and developer programme verification enquiries.
-      </p>
-      <section>
-        <h2>Email</h2>
-        <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
-        <p>Please include enough context for us to route and answer your enquiry.</p>
-      </section>
-      <section>
-        <h2>Company</h2>
-        <p><strong>{site.operator}</strong></p>
-        <address>{site.address.map((line) => <div key={line}>{line}</div>)}</address>
-      </section>
-      <section>
-        <h2>Product status</h2>
-        <p>
-          The FinStates desktop application and its first ACRA 2026 XBRL filing
-          workflow are under active development. Public downloads will only be
-          linked from this website after a release has completed validation,
-          signing and publication.
-        </p>
-      </section>
+    <ContentPage label="Contact" title="Support and company enquiries">
+      <p className="prose-lead">FinStates is in active development and is not yet available for public download.</p>
+      <section><h2>Email</h2><p><a href={`mailto:${site.email}`}>{site.email}</a></p><p>Product, business, security and developer programme verification enquiries are welcome.</p></section>
+      <section><h2>Company</h2><p><strong>{site.operator}</strong></p><address>{site.address.map((line) => <span key={line}>{line}</span>)}</address></section>
+      <section><h2>Product status</h2><p>The FinStates desktop application and its first ACRA 2026 XBRL filing workflow are under active development. Public downloads will only be linked from this website after validation, signing and publication.</p></section>
     </ContentPage>
   );
 }
 
 function PrivacyPage() {
   return (
-    <ContentPage eyebrow="Legal" title="Website privacy notice">
+    <ContentPage label="Privacy" title="Website privacy notice">
       <p className="prose-meta">Last updated: 16 August 2026</p>
-      <p className="prose-lead">
-        This notice describes the public FinStates website at finstates.app.
-        Product-specific privacy information will be published before the FinStates application is released.
-      </p>
-      <section>
-        <h2>Information this website handles</h2>
-        <p>
-          This is a static informational website. It does not provide user accounts,
-          accept document uploads, run advertising trackers or set application cookies.
-          Our hosting and network providers may process limited technical request data,
-          such as IP address, browser information and request time, to deliver and protect the website.
-        </p>
-      </section>
-      <section>
-        <h2>When you contact us</h2>
-        <p>
-          If you email us, we use the contact details and message content you provide
-          to respond, maintain necessary correspondence and protect our services.
-          We do not sell personal information received through company correspondence.
-        </p>
-      </section>
-      <section>
-        <h2>Third-party services</h2>
-        <p>
-          The website is delivered using third-party domain, network and hosting
-          infrastructure. Links to third-party websites are governed by those providers' own notices.
-        </p>
-      </section>
-      <section>
-        <h2>Contact</h2>
-        <p>Questions about this notice can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
-        <p>{site.operator}, Shenzhen, Guangdong, China.</p>
-      </section>
+      <p className="prose-lead">This notice describes the public FinStates website at finstates.app.</p>
+      <section><h2>Information this website handles</h2><p>This static informational website does not provide user accounts, accept document uploads, run advertising trackers or set application cookies. Hosting and network providers may process limited technical request data to deliver and protect the website.</p></section>
+      <section><h2>When you contact us</h2><p>If you email us, we use the contact details and message content you provide to respond, maintain necessary correspondence and protect our services. We do not sell personal information received through company correspondence.</p></section>
+      <section><h2>Third-party services</h2><p>The website is delivered using third-party domain, network and hosting infrastructure. Links to other websites are governed by those providers' own notices.</p></section>
+      <section><h2>Contact</h2><p>Questions can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p><p>{site.operator}, Shenzhen, Guangdong, China.</p></section>
     </ContentPage>
   );
 }
 
 function TermsPage() {
   return (
-    <ContentPage eyebrow="Legal" title="Website terms of use">
+    <ContentPage label="Terms" title="Website terms of use">
       <p className="prose-meta">Last updated: 16 August 2026</p>
-      <p className="prose-lead">
-        These terms apply to the public FinStates website. Product licence terms
-        will be provided separately when FinStates is released.
-      </p>
-      <section>
-        <h2>Website purpose</h2>
-        <p>
-          This website provides factual information about FinStates, its developer
-          and its current development status. Features described as in development
-          are not an offer, purchase commitment or promise of a release date.
-        </p>
-      </section>
-      <section>
-        <h2>No professional advice</h2>
-        <p>
-          Website content is general product information. It is not accounting,
-          legal, investment, tax or filing advice and does not replace professional judgment or official guidance.
-        </p>
-      </section>
-      <section>
-        <h2>Intellectual property</h2>
-        <p>
-          The FinStates name, branding, website content and product materials are
-          owned by {site.operator} or used with permission. Third-party names and standards remain the property of their respective owners.
-        </p>
-      </section>
-      <section>
-        <h2>Availability and changes</h2>
-        <p>
-          We may correct, update or remove website content as the product develops.
-          We do not guarantee uninterrupted availability of the public website.
-        </p>
-      </section>
-      <section>
-        <h2>Contact</h2>
-        <p>Questions about these terms can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
-      </section>
+      <p className="prose-lead">These terms apply to the public FinStates website. Product licence terms will be provided separately when FinStates is released.</p>
+      <section><h2>Website purpose</h2><p>This website provides factual information about FinStates, its developer and its current development status. Features described as in development are not an offer, purchase commitment or promise of a release date.</p></section>
+      <section><h2>No professional advice</h2><p>Website content is general product information. It is not accounting, legal, investment, tax or filing advice and does not replace professional judgment or official guidance.</p></section>
+      <section><h2>Intellectual property</h2><p>The FinStates name, branding, website content and product materials are owned by {site.operator} or used with permission. Third-party names and standards remain the property of their respective owners.</p></section>
+      <section><h2>Availability and changes</h2><p>We may correct, update or remove website content as the product develops. We do not guarantee uninterrupted availability of the public website.</p></section>
+      <section><h2>Contact</h2><p>Questions can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p></section>
     </ContentPage>
   );
 }
 
 function NotFoundPage() {
-  return (
-    <ContentPage eyebrow="404" title="Page not found">
-      <p className="prose-lead">The page you requested does not exist.</p>
-      <p><a className="text-link" href="/">Return to the FinStates homepage <span aria-hidden="true">→</span></a></p>
-    </ContentPage>
-  );
+  return <ContentPage label="404" title="Page not found"><p className="prose-lead">The page you requested does not exist.</p><p><a href="/">Return to the FinStates homepage →</a></p></ContentPage>;
 }
 
 function resolvePage() {

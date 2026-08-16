@@ -1,64 +1,68 @@
 :root {
-  /* Brand primitives: future rebrands should start here. */
-  --palette-navy-950: #08152f;
-  --palette-navy-900: #0f2249;
-  --palette-navy-800: #173466;
-  --palette-gold-600: #c78100;
-  --palette-gold-500: #e89800;
-  --palette-gold-400: #fdac03;
-  --palette-gold-100: #fff1ca;
-  --palette-blue-100: #eaf2fb;
-  --palette-slate-700: #3a4964;
-  --palette-slate-600: #526079;
-  --palette-slate-500: #6d7890;
-  --palette-slate-300: #cbd3df;
-  --palette-slate-200: #e2e7ef;
-  --palette-slate-100: #eef2f7;
-  --palette-slate-050: #f7f9fc;
+  /* Brand primitives. Rebrand here; components consume semantic tokens only. */
+  --palette-ink-950: #07162f;
+  --palette-ink-900: #10264c;
+  --palette-ink-800: #1b3f73;
+  --palette-blue-700: #2d64ad;
+  --palette-blue-500: #5d91d8;
+  --palette-blue-200: #cbdcf3;
+  --palette-blue-100: #e8f0fa;
+  --palette-blue-050: #f3f7fc;
+  --palette-gold-600: #bd7900;
+  --palette-gold-400: #f2a400;
+  --palette-gold-100: #fff2ce;
+  --palette-slate-700: #3f4d63;
+  --palette-slate-600: #5d697b;
+  --palette-slate-400: #94a0b2;
+  --palette-slate-200: #dce3eb;
+  --palette-slate-100: #edf1f6;
   --palette-white: #ffffff;
 
-  /* Semantic color roles: components consume these, never palette values. */
-  --color-brand-primary: var(--palette-navy-900);
-  --color-brand-strong: var(--palette-navy-950);
+  /* Semantic colors. */
+  --color-brand-primary: var(--palette-ink-900);
+  --color-brand-strong: var(--palette-ink-950);
   --color-accent-primary: var(--palette-gold-400);
   --color-accent-strong: var(--palette-gold-600);
   --color-accent-soft: var(--palette-gold-100);
-  --color-text-primary: var(--palette-navy-900);
+  --color-text-primary: var(--palette-ink-900);
   --color-text-secondary: var(--palette-slate-700);
   --color-text-muted: var(--palette-slate-600);
+  --color-text-soft: var(--palette-slate-400);
   --color-text-on-brand: var(--palette-white);
-  --color-surface-canvas: var(--palette-slate-050);
+  --color-surface-canvas: var(--palette-blue-050);
   --color-surface-subtle: var(--palette-slate-100);
   --color-surface-raised: var(--palette-white);
-  --color-surface-brand: var(--palette-navy-900);
-  --color-surface-accent: var(--palette-gold-100);
-  --color-border-subtle: color-mix(in srgb, var(--palette-navy-900) 10%, transparent);
-  --color-border-default: color-mix(in srgb, var(--palette-navy-900) 18%, transparent);
-  --color-focus-ring: var(--palette-gold-500);
-  --color-link: var(--palette-navy-800);
+  --color-surface-brand: var(--palette-ink-900);
+  --color-surface-glass: rgb(255 255 255 / 72%);
+  --color-border-subtle: rgb(16 38 76 / 9%);
+  --color-border-default: rgb(16 38 76 / 16%);
+  --color-border-strong: rgb(16 38 76 / 28%);
+  --color-focus-ring: var(--palette-gold-400);
+  --color-link: var(--palette-blue-700);
   --color-link-hover: var(--palette-gold-600);
 
   /* Typography. */
   --font-family-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.3125rem;
   --font-size-2xl: 1.75rem;
-  --font-size-3xl: clamp(2.25rem, 5vw, 4rem);
-  --font-size-display: clamp(3.75rem, 8vw, 7rem);
-  --font-weight-regular: 430;
-  --font-weight-medium: 560;
-  --font-weight-semibold: 680;
-  --font-weight-bold: 780;
-  --line-height-tight: 0.94;
-  --line-height-heading: 1.1;
+  --font-size-3xl: clamp(2.25rem, 4.5vw, 3.75rem);
+  --font-size-display: clamp(3.2rem, 5.4vw, 5rem);
+  --font-weight-regular: 420;
+  --font-weight-medium: 540;
+  --font-weight-semibold: 650;
+  --font-weight-bold: 760;
+  --line-height-tight: 1.02;
+  --line-height-heading: 1.08;
   --line-height-body: 1.65;
-  --letter-spacing-tight: -0.055em;
-  --letter-spacing-label: 0.11em;
+  --letter-spacing-tight: -0.052em;
+  --letter-spacing-label: 0.08em;
 
-  /* Spacing and layout. */
+  /* Spacing. */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -71,24 +75,37 @@
   --space-16: 4rem;
   --space-20: 5rem;
   --space-24: 6rem;
+  --space-28: 7rem;
   --space-32: 8rem;
+  --space-36: 9rem;
+
+  /* Layout. */
+  --layout-container-max: 71.25rem;
   --layout-page-gutter: clamp(1.25rem, 4vw, 3rem);
-  --layout-content-max: 76rem;
-  --layout-copy-max: 42rem;
-  --layout-section-block: clamp(5rem, 10vw, 8rem);
+  --layout-header-height: 2.875rem;
+  --layout-header-width-expanded: 71.25rem;
+  --layout-header-width-compact: 61.25rem;
+  --layout-hero-min-height: min(100svh, 63.75rem);
+  --layout-section-block: clamp(5rem, 9vw, 9rem);
+  --layout-grid-gap: clamp(2rem, 6vw, 7.5rem);
+  --layout-card-gap: clamp(1rem, 2vw, 1.5rem);
+  --layout-copy-max: 39rem;
 
   /* Shape and elevation. */
-  --radius-sm: 0.625rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.5rem;
-  --radius-xl: 2rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
   --radius-pill: 999px;
   --border-width-hairline: 1px;
-  --shadow-sm: 0 0.5rem 1.5rem color-mix(in srgb, var(--palette-navy-900) 8%, transparent);
-  --shadow-lg: 0 2rem 5rem color-mix(in srgb, var(--palette-navy-900) 14%, transparent);
+  --shadow-sm: 0 0.75rem 2rem rgb(16 38 76 / 8%);
+  --shadow-md: 0 1.5rem 4rem rgb(16 38 76 / 12%);
+  --shadow-glass: 0 0.5rem 2rem rgb(16 38 76 / 7%);
 
   /* Motion. */
-  --duration-fast: 140ms;
-  --duration-normal: 220ms;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 600ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --header-backdrop-blur: 0.75rem;
 }
