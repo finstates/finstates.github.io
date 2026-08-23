@@ -149,7 +149,10 @@ function SiteHeader() {
               <span>{account.account.email}</span>
             </a>
           ) : (
-            <a className="header-cta" href="/register/">Get early access</a>
+            <>
+              <a className="header-link header-sign-in" href="/register/">Sign in</a>
+              <a className="header-cta" href="/register/">Get early access</a>
+            </>
           )}
         </nav>
       </header>
@@ -470,15 +473,15 @@ function RegistrationPage() {
             <div className="form-result" role="status">
               <span className="form-result-icon">✓</span>
               <h2>Check your email.</h2>
-              <p>We sent a confirmation link to <strong>{email.trim()}</strong>. Open it within 24 hours to create your account.</p>
+              <p>We sent a confirmation link to <strong>{email.trim()}</strong>. Open it within 24 hours to create or sign in to your account.</p>
               <button className="button-secondary" type="button" onClick={() => setState("idle")}>Use another email</button>
             </div>
           ) : (
             <form onSubmit={submit}>
               <div className="form-heading">
-                <p className="eyebrow">Register</p>
-                <h2>Start with your email.</h2>
-                <p>No password is required. We’ll send a secure confirmation link.</p>
+                <p className="eyebrow">Register or sign in</p>
+                <h2>Continue with your email.</h2>
+                <p>No password is required. New and existing accounts use the same secure confirmation link.</p>
               </div>
               <label className="field-label" htmlFor="registration-email">Email</label>
               <input
@@ -497,7 +500,7 @@ function RegistrationPage() {
               </label>
               {state === "error" ? <p className="form-error" role="alert">{message}</p> : null}
               <button className="button-primary" type="submit" disabled={state === "submitting"}>
-                {state === "submitting" ? "Sending…" : "Create my account"}
+                {state === "submitting" ? "Sending…" : "Continue with email"}
               </button>
               <p className="form-legal">By continuing, you acknowledge the <a href="/terms/">Terms</a> and <a href="/privacy/">Privacy Notice</a>. Registration does not guarantee a test invitation or release date.</p>
             </form>
