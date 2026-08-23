@@ -132,6 +132,9 @@ h1, h2, h3 { color: var(--color-brand-strong); }
 .header-link:hover { color: var(--color-link); }
 .header-cta { padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); color: var(--color-text-on-brand); background: var(--color-surface-brand); box-shadow: var(--shadow-sm); }
 .header-cta:hover { background: var(--palette-blue-700); }
+.header-account { display: inline-flex; min-width: 0; max-width: 16rem; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-pill); color: var(--color-text-primary); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); text-decoration: none; }
+.header-account > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header-account:hover { border-color: var(--color-link); color: var(--color-link); }
 
 /* DeepSeek-inspired full-viewport hero with FinStates product evidence. */
 .hero {
@@ -450,6 +453,9 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
 .form-result h2 { max-width: none; margin-top: var(--space-5); }
 .form-result p { color: var(--color-text-secondary); line-height: var(--line-height-body); }
 .form-result .button-secondary { margin-top: var(--space-4); }
+.account-result .eyebrow { margin-top: var(--space-6); margin-bottom: 0; }
+.account-result h2 { margin-top: var(--space-3); }
+.account-result .form-error { color: #8b2530; }
 .form-result-icon { display: grid; width: 3rem; height: 3rem; place-items: center; border-radius: 50%; color: #237747; background: #e0f3e8; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
 .confirmation-page { display: grid; min-height: 82vh; place-items: center; padding-block: clamp(8rem, 15vh, 11rem) var(--layout-section-block); }
 .confirmation-card { width: min(100%, 42rem); padding: clamp(var(--space-8), 6vw, var(--space-16)); }
@@ -539,6 +545,7 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
   .header-status { font-size: var(--font-size-xs); }
   .header-link { display: none; }
   .header-cta { padding-inline: var(--space-3); font-size: var(--font-size-xs); }
+  .header-account { max-width: 10rem; padding-inline: var(--space-3); }
   .hero-grid { background-size: 48px 48px; }
   .hero-layout { grid-template-rows: auto minmax(29rem, auto) auto; }
   .hero h1 { font-size: clamp(2.9rem, 13vw, 4.2rem); }

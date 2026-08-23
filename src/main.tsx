@@ -1,4 +1,12 @@
-import { StrictMode, type ReactNode, useEffect, useState } from "react";
+import {
+  StrictMode,
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { createRoot } from "react-dom/client";
 import brandIconUrl from "./assets/icon-only.png";
 import "./design-tokens.css";
@@ -16,6 +24,70 @@ const site = {
 } as const;
 
 const apiBase = "https://api.finstates.app/v1";
+
+type WebsiteAccount = {
+  email: string;
+  earlyAccessStatus: "registered" | "invited" | "activated" | null;
+  earlyAccessVerifiedAt: string | null;
+};
+
+type AccountState =
+  | { status: "loading" | "signed-out"; account: null }
+  | { status: "signed-in"; account: WebsiteAccount };
+
+type AccountContextValue = AccountState & {
+  refresh: () => Promise<WebsiteAccount | null>;
+  signOut: () => Promise<void>;
+};
+
+const AccountContext = createContext<AccountContextValue | null>(null);
+
+function AccountProvider({ children }: { children: ReactNode }) {
+  const [accountState, setAccountState] = useState<AccountState>({ status: "loading", account: null });
+
+  const refresh = useCallback(async () => {
+    try {
+      const response = await fetch(`${apiBase}/account/session`, {
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      });
+      if (!response.ok) {
+        setAccountState({ status: "signed-out", account: null });
+        return null;
+      }
+      const account = await response.json() as WebsiteAccount;
+      setAccountState({ status: "signed-in", account });
+      return account;
+    } catch {
+      setAccountState({ status: "signed-out", account: null });
+      return null;
+    }
+  }, []);
+
+  const signOut = useCallback(async () => {
+    const response = await fetch(`${apiBase}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) throw new Error("We couldn’t sign you out. Please try again.");
+    setAccountState({ status: "signed-out", account: null });
+  }, []);
+
+  useEffect(() => { void refresh(); }, [refresh]);
+
+  return (
+    <AccountContext.Provider value={{ ...accountState, refresh, signOut }}>
+      {children}
+    </AccountContext.Provider>
+  );
+}
+
+function useAccount() {
+  const account = useContext(AccountContext);
+  if (!account) throw new Error("AccountProvider is missing");
+  return account;
+}
 
 const creditPacks = [
   { name: "Small", credits: "200", price: "$19" },
@@ -46,6 +118,7 @@ function syncDocumentThemeColor() {
 
 function SiteHeader() {
   const [compact, setCompact] = useState(false);
+  const account = useAccount();
 
   useEffect(() => {
     let frame = 0;
@@ -70,7 +143,14 @@ function SiteHeader() {
         </a>
         <nav className="header-actions" aria-label="Primary navigation">
           <a className="header-link" href="/pricing/">Pricing</a>
-          <a className="header-cta" href="/register/">Get early access</a>
+          {account.status === "signed-in" ? (
+            <a className="header-account" href="/register/" title={account.account.email}>
+              <span className="status-dot" aria-hidden="true" />
+              <span>{account.account.email}</span>
+            </a>
+          ) : (
+            <a className="header-cta" href="/register/">Get early access</a>
+          )}
         </nav>
       </header>
     </div>
@@ -320,10 +400,21 @@ function SupportPage() {
 }
 
 function RegistrationPage() {
+  const account = useAccount();
   const [email, setEmail] = useState("");
   const [productUpdates, setProductUpdates] = useState(false);
   const [state, setState] = useState<"idle" | "submitting" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  const signOut = async () => {
+    setMessage("");
+    try {
+      await account.signOut();
+      setState("idle");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "We couldn’t sign you out. Please try again.");
+    }
+  };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -333,6 +424,7 @@ function RegistrationPage() {
     try {
       const response = await fetch(`${apiBase}/early-access/registrations`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), productUpdates }),
       });
@@ -352,8 +444,8 @@ function RegistrationPage() {
       <main id="main-content" className="conversion-page page-width">
         <section className="conversion-copy" aria-labelledby="registration-title">
           <p className="eyebrow">Early access</p>
-          <h1 id="registration-title">Create your FinStates account before launch.</h1>
-          <p className="conversion-lead">Use the same verified email to sign in to the desktop app when it becomes available.</p>
+          <h1 id="registration-title">{account.status === "signed-in" ? "Your FinStates early access account." : "Create your FinStates account before launch."}</h1>
+          <p className="conversion-lead">{account.status === "signed-in" ? "Your email is verified and this browser is signed in." : "Use the same verified email to sign in to the desktop app when it becomes available."}</p>
         </section>
         <div className="conversion-benefits">
           <ul className="benefit-list">
@@ -364,7 +456,17 @@ function RegistrationPage() {
           <a className="text-link" href="/pricing/">See Credits pricing <span aria-hidden="true">→</span></a>
         </div>
         <section className="registration-card" aria-label="Early access registration form">
-          {state === "sent" ? (
+          {account.status === "signed-in" ? (
+            <div className="form-result account-result" role="status">
+              <span className="form-result-icon">✓</span>
+              <p className="eyebrow">Signed in</p>
+              <h2>Your account is registered.</h2>
+              <p><strong>{account.account.email}</strong></p>
+              <p>Your early access email is verified. Use this same email in the FinStates desktop app after release.</p>
+              {message ? <p className="form-error" role="alert">{message}</p> : null}
+              <button className="button-secondary" type="button" onClick={() => void signOut()}>Sign out</button>
+            </div>
+          ) : state === "sent" ? (
             <div className="form-result" role="status">
               <span className="form-result-icon">✓</span>
               <h2>Check your email.</h2>
@@ -407,6 +509,7 @@ function RegistrationPage() {
 }
 
 function RegistrationConfirmPage() {
+  const account = useAccount();
   const [state, setState] = useState<"ready" | "submitting" | "confirmed" | "invalid">("ready");
   const [email, setEmail] = useState("");
   const token = new URLSearchParams(window.location.hash.replace(/^#/, "")).get("token") ?? "";
@@ -421,12 +524,14 @@ function RegistrationConfirmPage() {
     try {
       const response = await fetch(`${apiBase}/early-access/registrations/confirm`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
       const body = await response.json().catch(() => null) as { email?: string } | null;
       if (!response.ok || !body?.email) throw new Error("invalid");
       setEmail(body.email);
+      await account.refresh();
       window.history.replaceState(null, "", window.location.pathname);
       setState("confirmed");
     } catch {
@@ -442,9 +547,9 @@ function RegistrationConfirmPage() {
             <>
               <span className="form-result-icon">✓</span>
               <p className="eyebrow">Account confirmed</p>
-              <h1>You’re registered for FinStates early access.</h1>
-              <p><strong>{email}</strong> is now your FinStates account email. Use it to sign in to the desktop app when FinStates becomes available.</p>
-              <div className="confirmation-actions"><a className="button-primary" href="/pricing/">View pricing</a><a className="button-secondary" href="/">Return home</a></div>
+              <h1>You’re registered and signed in.</h1>
+              <p><strong>{email}</strong> is now your FinStates account email. This browser is signed in, and the account indicator will remain visible in the navigation.</p>
+              <div className="confirmation-actions"><a className="button-primary" href="/register/">View my account</a><a className="button-secondary" href="/">Return home</a></div>
             </>
           ) : state === "invalid" ? (
             <>
@@ -457,7 +562,7 @@ function RegistrationConfirmPage() {
             <>
               <p className="eyebrow">Confirm your email</p>
               <h1>Create your FinStates account.</h1>
-              <p>This confirms your email and registers your early access account. It will not sign this browser in.</p>
+              <p>This confirms your email, registers your early access account and signs this browser in.</p>
               <button className="button-primary" type="button" onClick={() => void confirm()} disabled={state === "submitting"}>
                 {state === "submitting" ? "Confirming…" : "Confirm early access"}
               </button>
@@ -513,8 +618,8 @@ function PrivacyPage() {
     <ContentPage label="Privacy" title="Website privacy notice">
       <p className="prose-meta">Last updated: 23 August 2026</p>
       <p className="prose-lead">This notice describes the public FinStates website at finstates.app.</p>
-      <section><h2>Account and early access information</h2><p>When you register, we process your email address, confirmation status, early access status and, if selected, your consent to receive product updates. Your verified email becomes your FinStates account identity and can later be used to sign in to the desktop app. Registration does not create a browser session.</p></section>
-      <section><h2>Security and service delivery</h2><p>We process limited technical request data to deliver and protect the website and registration service. Confirmation tokens are stored only as protected hashes with expiry and consumption records. Hosting, network and email providers process the information needed to deliver these services. The website does not accept document uploads, run advertising trackers or set application cookies.</p></section>
+      <section><h2>Account and early access information</h2><p>When you register, we process your email address, confirmation status, early access status and, if selected, your consent to receive product updates. Your verified email becomes your FinStates account identity and can later be used to sign in to the desktop app. Confirming your email creates a website session so you can see that you are signed in.</p></section>
+      <section><h2>Security and service delivery</h2><p>We process limited technical request data to deliver and protect the website and registration service. Confirmation tokens are stored only as protected hashes with expiry and consumption records. Hosting, network and email providers process the information needed to deliver these services. The website uses a strictly necessary, secure session cookie for account status and sign-out. It does not accept document uploads or run advertising trackers.</p></section>
       <section><h2>When you contact us</h2><p>If you email us, we use the contact details and message content you provide to respond, maintain necessary correspondence and protect our services. We do not sell personal information received through company correspondence.</p></section>
       <section><h2>Product updates</h2><p>If you separately select product updates, we may use your email to send occasional FinStates news. You can withdraw that choice by contacting us. Account confirmation, security and requested availability notices may still be sent as service messages.</p></section>
       <section><h2>Retention and choices</h2><p>We retain account and early access records as needed to provide the requested account, operate promotions, prevent abuse and meet legal obligations. You can ask about your information or request correction or deletion by contacting us, subject to records we must retain.</p></section>
@@ -558,5 +663,5 @@ function resolvePage() {
 syncDocumentThemeColor();
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>{resolvePage()}</StrictMode>,
+  <StrictMode><AccountProvider>{resolvePage()}</AccountProvider></StrictMode>,
 );
