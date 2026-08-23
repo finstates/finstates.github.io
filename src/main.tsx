@@ -15,6 +15,14 @@ const site = {
   ],
 } as const;
 
+const apiBase = "https://api.finstates.app/v1";
+
+const creditPacks = [
+  { name: "Small", credits: "200", price: "$19" },
+  { name: "Medium", credits: "600", price: "$50" },
+  { name: "Large", credits: "2,000", price: "$150" },
+] as const;
+
 const taskSteps = [
   ["01", "Extract", "Read the complete report and confirm its filing scope."],
   ["02", "Prepare", "Review tables, Concepts, values and source evidence."],
@@ -60,10 +68,10 @@ function SiteHeader() {
           <img className="brand-icon" src={brandIconUrl} alt="" />
           <span>Fin<span className="brand-accent">States</span></span>
         </a>
-        <a className="header-status" href="/#status">
-          <span className="status-dot" aria-hidden="true" />
-          Development status
-        </a>
+        <nav className="header-actions" aria-label="Primary navigation">
+          <a className="header-link" href="/pricing/">Pricing</a>
+          <a className="header-cta" href="/register/">Get early access</a>
+        </nav>
       </header>
     </div>
   );
@@ -83,6 +91,8 @@ function SiteFooter() {
         <FooterColumn title="Product">
           <a href="/#workflow">ACRA workflow</a>
           <a href="/#evidence">Evidence and control</a>
+          <a href="/pricing/">Pricing</a>
+          <a href="/register/">Early access</a>
           <a href="/#status">Development status</a>
         </FooterColumn>
         <FooterColumn title="Company">
@@ -196,9 +206,9 @@ function Hero() {
             <span>PDF to validated five-file ZIP</span>
             <b aria-hidden="true">↗</b>
           </a>
-          <a className="action-card" href="#status">
-            <strong>Development status</strong>
-            <span>See what is implemented and what remains</span>
+          <a className="action-card action-card-primary" href="/register/">
+            <strong>Get early access</strong>
+            <span>Create your account now and receive 200 promotional Credits when you first sign in to the app</span>
             <b aria-hidden="true">↗</b>
           </a>
         </div>
@@ -278,7 +288,7 @@ function HomePage() {
             <div className="status-detail">
               <p>FinStates Desktop and the ACRA 2026 XBRL filing Task are in active development and are not yet publicly released.</p>
               <p>Public downloads will appear here only after the release has completed product validation, signing and publication.</p>
-              <a href="/support/">Contact FinStates <span aria-hidden="true">→</span></a>
+              <a href="/register/">Create your account <span aria-hidden="true">→</span></a>
             </div>
           </div>
         </section>
@@ -309,14 +319,205 @@ function SupportPage() {
   );
 }
 
+function RegistrationPage() {
+  const [email, setEmail] = useState("");
+  const [productUpdates, setProductUpdates] = useState(false);
+  const [state, setState] = useState<"idle" | "submitting" | "sent" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!email.trim() || state === "submitting") return;
+    setState("submitting");
+    setMessage("");
+    try {
+      const response = await fetch(`${apiBase}/early-access/registrations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), productUpdates }),
+      });
+      const body = await response.json().catch(() => null) as {
+        error?: { message?: string; retryAfterSeconds?: number };
+      } | null;
+      if (!response.ok) throw new Error(body?.error?.message ?? "We couldn’t start registration. Please try again.");
+      setState("sent");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "We couldn’t start registration. Please try again.");
+      setState("error");
+    }
+  };
+
+  return (
+    <PageFrame>
+      <main id="main-content" className="conversion-page page-width">
+        <section className="conversion-copy" aria-labelledby="registration-title">
+          <p className="eyebrow">Early access</p>
+          <h1 id="registration-title">Create your FinStates account before launch.</h1>
+          <p className="conversion-lead">Use the same verified email to sign in to the desktop app when it becomes available.</p>
+        </section>
+        <div className="conversion-benefits">
+          <ul className="benefit-list">
+            <li><span>01</span><div><strong>One account</strong><p>Your website registration and future desktop sign-in share the same FinStates identity.</p></div></li>
+            <li><span>02</span><div><strong>200 promotional Credits</strong><p>Granted on your first desktop sign-in and valid for 30 days from that date.</p></div></li>
+            <li><span>03</span><div><strong>Early programme consideration</strong><p>Registration records your interest. Test invitations remain limited and are not guaranteed.</p></div></li>
+          </ul>
+          <a className="text-link" href="/pricing/">See Credits pricing <span aria-hidden="true">→</span></a>
+        </div>
+        <section className="registration-card" aria-label="Early access registration form">
+          {state === "sent" ? (
+            <div className="form-result" role="status">
+              <span className="form-result-icon">✓</span>
+              <h2>Check your email.</h2>
+              <p>We sent a confirmation link to <strong>{email.trim()}</strong>. Open it within 24 hours to create your account.</p>
+              <button className="button-secondary" type="button" onClick={() => setState("idle")}>Use another email</button>
+            </div>
+          ) : (
+            <form onSubmit={submit}>
+              <div className="form-heading">
+                <p className="eyebrow">Register</p>
+                <h2>Start with your email.</h2>
+                <p>No password is required. We’ll send a secure confirmation link.</p>
+              </div>
+              <label className="field-label" htmlFor="registration-email">Email</label>
+              <input
+                className="text-input"
+                id="registration-email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(event) => { setEmail(event.target.value); setState("idle"); setMessage(""); }}
+                placeholder="you@company.com"
+              />
+              <label className="checkbox-field">
+                <input type="checkbox" checked={productUpdates} onChange={(event) => setProductUpdates(event.target.checked)} />
+                <span>Send me occasional FinStates product updates. I can opt out by contacting support.</span>
+              </label>
+              {state === "error" ? <p className="form-error" role="alert">{message}</p> : null}
+              <button className="button-primary" type="submit" disabled={state === "submitting"}>
+                {state === "submitting" ? "Sending…" : "Create my account"}
+              </button>
+              <p className="form-legal">By continuing, you acknowledge the <a href="/terms/">Terms</a> and <a href="/privacy/">Privacy Notice</a>. Registration does not guarantee a test invitation or release date.</p>
+            </form>
+          )}
+        </section>
+      </main>
+    </PageFrame>
+  );
+}
+
+function RegistrationConfirmPage() {
+  const [state, setState] = useState<"ready" | "submitting" | "confirmed" | "invalid">("ready");
+  const [email, setEmail] = useState("");
+  const token = new URLSearchParams(window.location.hash.replace(/^#/, "")).get("token") ?? "";
+
+  useEffect(() => {
+    if (!token) setState("invalid");
+  }, [token]);
+
+  const confirm = async () => {
+    if (!token || state === "submitting") return;
+    setState("submitting");
+    try {
+      const response = await fetch(`${apiBase}/early-access/registrations/confirm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const body = await response.json().catch(() => null) as { email?: string } | null;
+      if (!response.ok || !body?.email) throw new Error("invalid");
+      setEmail(body.email);
+      window.history.replaceState(null, "", window.location.pathname);
+      setState("confirmed");
+    } catch {
+      setState("invalid");
+    }
+  };
+
+  return (
+    <PageFrame>
+      <main id="main-content" className="confirmation-page page-width">
+        <section className="confirmation-card">
+          {state === "confirmed" ? (
+            <>
+              <span className="form-result-icon">✓</span>
+              <p className="eyebrow">Account confirmed</p>
+              <h1>You’re registered for FinStates early access.</h1>
+              <p><strong>{email}</strong> is now your FinStates account email. Use it to sign in to the desktop app when FinStates becomes available.</p>
+              <div className="confirmation-actions"><a className="button-primary" href="/pricing/">View pricing</a><a className="button-secondary" href="/">Return home</a></div>
+            </>
+          ) : state === "invalid" ? (
+            <>
+              <p className="eyebrow">Confirmation link</p>
+              <h1>This link is invalid or has expired.</h1>
+              <p>Request a new confirmation email to continue.</p>
+              <a className="button-primary" href="/register/">Return to registration</a>
+            </>
+          ) : (
+            <>
+              <p className="eyebrow">Confirm your email</p>
+              <h1>Create your FinStates account.</h1>
+              <p>This confirms your email and registers your early access account. It will not sign this browser in.</p>
+              <button className="button-primary" type="button" onClick={() => void confirm()} disabled={state === "submitting"}>
+                {state === "submitting" ? "Confirming…" : "Confirm early access"}
+              </button>
+            </>
+          )}
+        </section>
+      </main>
+    </PageFrame>
+  );
+}
+
+function PricingPage() {
+  return (
+    <PageFrame>
+      <main id="main-content" className="pricing-page page-width">
+        <header className="pricing-header">
+          <p className="eyebrow">Credits pricing</p>
+          <h1>Pay for the AI work you use.</h1>
+          <p>FinStates keeps local Facts, validation, preview and export available without Credits. Credits cover AI report identification, structure recognition and automatic tagging.</p>
+        </header>
+        <section className="pricing-grid" aria-label="AI Credits packs">
+          {creditPacks.map((pack) => (
+            <article className="price-card" key={pack.name}>
+              <span>{pack.name}</span>
+              <strong>{pack.credits}</strong>
+              <p>AI Credits</p>
+              <b>{pack.price}</b>
+              <small>USD · one-time purchase</small>
+            </article>
+          ))}
+        </section>
+        <section className="pricing-details" aria-labelledby="pricing-details-title">
+          <div><p className="eyebrow">How it works</p><h2 id="pricing-details-title">Clear before every AI action.</h2></div>
+          <dl>
+            <div><dt>Purchased Credits</dt><dd>Never expire. Packs use the same models and processing quality.</dd></div>
+            <div><dt>Usage</dt><dd>Varies by report length and complexity. FinStates shows an estimate before processing and charges actual successful usage.</dd></div>
+            <div><dt>Report capacity</dt><dd>Any completed Credits purchase increases simultaneous report processing capacity from one report to up to five.</dd></div>
+            <div><dt>MinerU parsing</dt><dd>Does not consume Credits or create a separate page balance. Account processing limits still apply.</dd></div>
+          </dl>
+        </section>
+        <section className="pricing-cta">
+          <div><p className="eyebrow">Before launch</p><h2>Register now. Start with 200 promotional Credits.</h2><p>They are granted when you first sign in to the released desktop app and expire 30 days later.</p></div>
+          <a className="button-primary" href="/register/">Get early access</a>
+        </section>
+        <p className="pricing-note">Purchases will be available through the Apple App Store and Microsoft Store after FinStates is released. The applicable store presents the final local price and transaction terms.</p>
+      </main>
+    </PageFrame>
+  );
+}
+
 function PrivacyPage() {
   return (
     <ContentPage label="Privacy" title="Website privacy notice">
-      <p className="prose-meta">Last updated: 16 August 2026</p>
+      <p className="prose-meta">Last updated: 23 August 2026</p>
       <p className="prose-lead">This notice describes the public FinStates website at finstates.app.</p>
-      <section><h2>Information this website handles</h2><p>This static informational website does not provide user accounts, accept document uploads, run advertising trackers or set application cookies. Hosting and network providers may process limited technical request data to deliver and protect the website.</p></section>
+      <section><h2>Account and early access information</h2><p>When you register, we process your email address, confirmation status, early access status and, if selected, your consent to receive product updates. Your verified email becomes your FinStates account identity and can later be used to sign in to the desktop app. Registration does not create a browser session.</p></section>
+      <section><h2>Security and service delivery</h2><p>We process limited technical request data to deliver and protect the website and registration service. Confirmation tokens are stored only as protected hashes with expiry and consumption records. Hosting, network and email providers process the information needed to deliver these services. The website does not accept document uploads, run advertising trackers or set application cookies.</p></section>
       <section><h2>When you contact us</h2><p>If you email us, we use the contact details and message content you provide to respond, maintain necessary correspondence and protect our services. We do not sell personal information received through company correspondence.</p></section>
-      <section><h2>Third-party services</h2><p>The website is delivered using third-party domain, network and hosting infrastructure. Links to other websites are governed by those providers' own notices.</p></section>
+      <section><h2>Product updates</h2><p>If you separately select product updates, we may use your email to send occasional FinStates news. You can withdraw that choice by contacting us. Account confirmation, security and requested availability notices may still be sent as service messages.</p></section>
+      <section><h2>Retention and choices</h2><p>We retain account and early access records as needed to provide the requested account, operate promotions, prevent abuse and meet legal obligations. You can ask about your information or request correction or deletion by contacting us, subject to records we must retain.</p></section>
       <section><h2>Contact</h2><p>Questions can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p><p>{site.operator}, Shenzhen, Guangdong, China.</p></section>
     </ContentPage>
   );
@@ -325,9 +526,11 @@ function PrivacyPage() {
 function TermsPage() {
   return (
     <ContentPage label="Terms" title="Website terms of use">
-      <p className="prose-meta">Last updated: 16 August 2026</p>
+      <p className="prose-meta">Last updated: 23 August 2026</p>
       <p className="prose-lead">These terms apply to the public FinStates website. Product licence terms will be provided separately when FinStates is released.</p>
       <section><h2>Website purpose</h2><p>This website provides factual information about FinStates, its developer and its current development status. Features described as in development are not an offer, purchase commitment or promise of a release date.</p></section>
+      <section><h2>Early access registration</h2><p>Confirming your email creates a FinStates account and records your interest in early access. It does not guarantee a test invitation, product availability or a release date. Promotional Credits are subject to the amount, activation condition and validity period shown when you register.</p></section>
+      <section><h2>Pricing</h2><p>Website pricing describes the current planned Credits packs. Purchases are not available until enabled in a released app. The applicable app store presents the final local price, taxes and transaction terms before purchase.</p></section>
       <section><h2>No professional advice</h2><p>Website content is general product information. It is not accounting, legal, investment, tax or filing advice and does not replace professional judgment or official guidance.</p></section>
       <section><h2>Intellectual property</h2><p>The FinStates name, branding, website content and product materials are owned by {site.operator} or used with permission. Third-party names and standards remain the property of their respective owners.</p></section>
       <section><h2>Availability and changes</h2><p>We may correct, update or remove website content as the product develops. We do not guarantee uninterrupted availability of the public website.</p></section>
@@ -344,6 +547,9 @@ function resolvePage() {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
   if (path === "/") return <HomePage />;
   if (path === "/support") return <SupportPage />;
+  if (path === "/register") return <RegistrationPage />;
+  if (path === "/register/confirm") return <RegistrationConfirmPage />;
+  if (path === "/pricing") return <PricingPage />;
   if (path === "/privacy") return <PrivacyPage />;
   if (path === "/terms") return <TermsPage />;
   return <NotFoundPage />;

@@ -126,6 +126,13 @@ h1, h2, h3 { color: var(--color-brand-strong); }
   box-shadow: 0 0 0 var(--space-1) color-mix(in srgb, var(--color-accent-primary) 16%, transparent);
 }
 
+.header-actions { display: flex; align-items: center; gap: var(--space-3); }
+.header-link, .header-cta { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); text-decoration: none; }
+.header-link { color: var(--color-text-secondary); }
+.header-link:hover { color: var(--color-link); }
+.header-cta { padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); color: var(--color-text-on-brand); background: var(--color-surface-brand); box-shadow: var(--shadow-sm); }
+.header-cta:hover { background: var(--palette-blue-700); }
+
 /* DeepSeek-inspired full-viewport hero with FinStates product evidence. */
 .hero {
   --pointer-x: 70%;
@@ -239,6 +246,8 @@ h1, h2, h3 { color: var(--color-brand-strong); }
 .action-card strong { margin-bottom: var(--space-2); color: var(--color-link); font-size: var(--font-size-md); }
 .action-card span { max-width: 14rem; color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: 1.5; }
 .action-card b { position: absolute; top: var(--space-5); right: var(--space-5); color: var(--color-text-soft); font-weight: var(--font-weight-regular); }
+.action-card-primary { border-color: rgb(16 38 76 / 10%); background: rgb(255 255 255 / 86%); }
+.action-card-primary strong { color: var(--color-accent-strong); }
 
 /* Product window: a code-native representation of the real two-pane Workbench. */
 .product-window {
@@ -405,6 +414,74 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
 .footer-bottom { padding-block: var(--space-6); border-top: var(--border-width-hairline) solid var(--color-border-subtle); }
 .footer-bottom p { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-xs); }
 
+/* Registration and confirmation. */
+.conversion-page { display: grid; grid-template: "copy form" auto "benefits form" auto / minmax(0, 1.05fr) minmax(22rem, 0.75fr); gap: var(--space-8) var(--layout-grid-gap); min-height: 82vh; align-content: center; padding-block: clamp(8rem, 15vh, 11rem) var(--layout-section-block); }
+.conversion-copy { grid-area: copy; }
+.conversion-benefits { grid-area: benefits; }
+.conversion-copy h1, .pricing-header h1, .confirmation-card h1 { max-width: 12ch; margin: 0; color: var(--color-brand-strong); font-size: var(--font-size-3xl); font-weight: var(--font-weight-medium); letter-spacing: var(--letter-spacing-tight); line-height: var(--line-height-heading); }
+.conversion-lead { max-width: 36rem; margin: var(--space-6) 0 0; color: var(--color-text-secondary); font-size: var(--font-size-xl); line-height: var(--line-height-body); }
+.benefit-list { display: grid; margin: 0 0 var(--space-8); padding: 0; list-style: none; }
+.benefit-list li { display: grid; grid-template-columns: 2rem 1fr; gap: var(--space-4); padding-block: var(--space-5); border-top: var(--border-width-hairline) solid var(--color-border-default); }
+.benefit-list li:last-child { border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
+.benefit-list li > span { color: var(--color-accent-strong); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); }
+.benefit-list strong { color: var(--color-brand-strong); font-size: var(--font-size-md); }
+.benefit-list p { margin: var(--space-1) 0 0; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.55; }
+.text-link { color: var(--color-link); font-weight: var(--font-weight-semibold); text-underline-offset: var(--space-1); }
+.registration-card, .confirmation-card { border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-xl); background: var(--color-surface-raised); box-shadow: var(--shadow-md); }
+.registration-card { grid-area: form; align-self: center; padding: clamp(var(--space-6), 4vw, var(--space-10)); }
+.form-heading { margin-bottom: var(--space-8); }
+.form-heading h2 { max-width: none; font-size: var(--font-size-2xl); }
+.form-heading > p:last-child { margin: var(--space-3) 0 0; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.55; }
+.field-label { display: block; margin-bottom: var(--space-2); color: var(--color-text-primary); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
+.text-input { width: 100%; min-height: 3.25rem; padding-inline: var(--space-4); border: var(--border-width-hairline) solid var(--color-border-strong); border-radius: var(--radius-sm); color: var(--color-text-primary); background: var(--color-surface-raised); }
+.text-input::placeholder { color: var(--color-text-soft); }
+.text-input:focus { border-color: var(--color-link); outline: 3px solid color-mix(in srgb, var(--color-link) 18%, transparent); outline-offset: 1px; }
+.checkbox-field { display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: start; margin-block: var(--space-5); color: var(--color-text-muted); font-size: var(--font-size-xs); line-height: 1.55; }
+.checkbox-field input { width: 1rem; height: 1rem; margin-top: 0.16rem; accent-color: var(--palette-blue-700); }
+.button-primary, .button-secondary { display: inline-flex; min-height: 3rem; align-items: center; justify-content: center; padding: var(--space-3) var(--space-5); border: var(--border-width-hairline) solid transparent; border-radius: var(--radius-sm); font-weight: var(--font-weight-semibold); text-decoration: none; cursor: pointer; }
+.button-primary { width: 100%; color: var(--color-text-on-brand); background: var(--color-surface-brand); }
+.button-primary:hover { background: var(--palette-blue-700); }
+.button-primary:disabled { cursor: wait; opacity: 0.65; }
+.button-secondary { color: var(--color-link); border-color: var(--color-border-default); background: var(--color-surface-canvas); }
+.form-legal { margin: var(--space-5) 0 0; color: var(--color-text-muted); font-size: var(--font-size-xs); line-height: 1.55; }
+.form-legal a { color: var(--color-link); }
+.form-error { padding: var(--space-3); border-radius: var(--radius-sm); color: #8b2530; background: #fff0f1; font-size: var(--font-size-sm); }
+.form-result { display: grid; justify-items: start; }
+.form-result h2 { max-width: none; margin-top: var(--space-5); }
+.form-result p { color: var(--color-text-secondary); line-height: var(--line-height-body); }
+.form-result .button-secondary { margin-top: var(--space-4); }
+.form-result-icon { display: grid; width: 3rem; height: 3rem; place-items: center; border-radius: 50%; color: #237747; background: #e0f3e8; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+.confirmation-page { display: grid; min-height: 82vh; place-items: center; padding-block: clamp(8rem, 15vh, 11rem) var(--layout-section-block); }
+.confirmation-card { width: min(100%, 42rem); padding: clamp(var(--space-8), 6vw, var(--space-16)); }
+.confirmation-card h1 { max-width: 14ch; }
+.confirmation-card > p:not(.eyebrow) { margin: var(--space-6) 0; color: var(--color-text-secondary); font-size: var(--font-size-lg); line-height: var(--line-height-body); }
+.confirmation-card > .button-primary, .confirmation-actions .button-primary { width: auto; }
+.confirmation-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+
+/* Pricing. */
+.pricing-page { padding-block: clamp(9rem, 17vh, 12rem) var(--layout-section-block); }
+.pricing-header { max-width: 52rem; }
+.pricing-header h1 { max-width: 13ch; }
+.pricing-header > p:last-child { max-width: 46rem; margin: var(--space-6) 0 0; color: var(--color-text-secondary); font-size: var(--font-size-xl); line-height: var(--line-height-body); }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--layout-card-gap); margin-top: var(--space-16); }
+.price-card { display: flex; min-height: 23rem; flex-direction: column; padding: clamp(var(--space-6), 4vw, var(--space-10)); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); }
+.price-card > span { color: var(--color-accent-strong); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); text-transform: uppercase; letter-spacing: var(--letter-spacing-label); }
+.price-card > strong { margin-top: auto; color: var(--color-brand-strong); font-size: clamp(3.5rem, 6vw, 5rem); font-weight: var(--font-weight-medium); letter-spacing: -0.06em; line-height: 1; }
+.price-card > p { margin: var(--space-2) 0 var(--space-8); color: var(--color-text-muted); }
+.price-card > b { color: var(--color-brand-strong); font-size: var(--font-size-2xl); }
+.price-card > small { margin-top: var(--space-1); color: var(--color-text-muted); }
+.pricing-details { display: grid; grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr); gap: var(--layout-grid-gap); margin-top: var(--layout-section-block); padding-block: var(--space-16); border-block: var(--border-width-hairline) solid var(--color-border-default); }
+.pricing-details dl { margin: 0; }
+.pricing-details dl > div { display: grid; grid-template-columns: minmax(10rem, 0.45fr) 1fr; gap: var(--space-5); padding-block: var(--space-5); border-top: var(--border-width-hairline) solid var(--color-border-subtle); }
+.pricing-details dl > div:last-child { border-bottom: var(--border-width-hairline) solid var(--color-border-subtle); }
+.pricing-details dt { color: var(--color-brand-strong); font-weight: var(--font-weight-semibold); }
+.pricing-details dd { margin: 0; color: var(--color-text-secondary); line-height: var(--line-height-body); }
+.pricing-cta { display: grid; grid-template-columns: 1fr auto; gap: var(--space-12); align-items: center; margin-top: var(--layout-section-block); padding: clamp(var(--space-8), 6vw, var(--space-16)); border-radius: var(--radius-xl); color: var(--color-text-on-brand); background: linear-gradient(135deg, var(--palette-ink-950), var(--palette-ink-800)); }
+.pricing-cta h2 { max-width: 20ch; color: var(--color-text-on-brand); }
+.pricing-cta p:last-child { max-width: 42rem; color: rgb(255 255 255 / 70%); line-height: var(--line-height-body); }
+.pricing-cta .button-primary { width: auto; color: var(--color-brand-strong); background: var(--color-surface-raised); }
+.pricing-note { max-width: 48rem; margin: var(--space-8) auto 0; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: var(--line-height-body); text-align: center; }
+
 /* Supporting pages. */
 .content-page { display: grid; grid-template-columns: minmax(17rem, 0.65fr) minmax(0, 1fr); gap: var(--layout-grid-gap); min-height: 75vh; padding-block: clamp(9rem, 18vh, 13rem) var(--layout-section-block); }
 .content-page-header { position: sticky; top: var(--space-24); align-self: start; }
@@ -440,13 +517,18 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
   .result-grid article, .result-grid article:first-child, .result-grid article:last-child { min-height: auto; padding: var(--space-8) 0; border-right: 0; border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
   .result-grid article:last-child { border-bottom: 0; }
   .result-grid article > span { margin-bottom: var(--space-6); }
-  .workflow-layout, .section-heading-wide, .status-panel, .content-page { grid-template-columns: 1fr; }
+  .workflow-layout, .section-heading-wide, .status-panel, .content-page, .pricing-details { grid-template-columns: 1fr; }
+  .conversion-page { grid-template: "copy" auto "form" auto "benefits" auto / 1fr; }
   .workflow-preview { position: static; }
   .control-grid { grid-template-columns: 1fr; }
   .section-heading-wide > p { margin-top: 0; }
   .footer-main { grid-template-columns: 1.5fr 1fr 1fr; }
   .footer-company { grid-column: 1 / -1; }
   .content-page-header { position: static; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .price-card { min-height: 19rem; }
+  .pricing-cta { grid-template-columns: 1fr; }
+  .pricing-cta .button-primary { width: 100%; }
 }
 
 @media (max-width: 640px) {
@@ -455,6 +537,8 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
   .brand { font-size: var(--font-size-md); }
   .brand-icon { width: 1.8rem; height: 1.8rem; }
   .header-status { font-size: var(--font-size-xs); }
+  .header-link { display: none; }
+  .header-cta { padding-inline: var(--space-3); font-size: var(--font-size-xs); }
   .hero-grid { background-size: 48px 48px; }
   .hero-layout { grid-template-rows: auto minmax(29rem, auto) auto; }
   .hero h1 { font-size: clamp(2.9rem, 13vw, 4.2rem); }
@@ -478,6 +562,9 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
   .footer-main { grid-template-columns: 1fr 1fr; }
   .footer-company { grid-column: 1 / -1; }
   .content-page { padding-top: 8rem; }
+  .conversion-page { padding-top: 8rem; }
+  .pricing-page { padding-top: 8rem; }
+  .pricing-details dl > div { grid-template-columns: 1fr; gap: var(--space-2); }
 }
 
 @media (max-width: 420px) {
