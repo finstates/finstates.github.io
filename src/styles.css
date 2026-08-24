@@ -750,6 +750,8 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
 .text-input:focus { border-color: var(--color-link); outline: 3px solid color-mix(in srgb, var(--color-link) 18%, transparent); outline-offset: 1px; }
 .checkbox-field { display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: start; margin-block: var(--space-5); color: var(--color-text-muted); font-size: var(--font-size-xs); line-height: 1.55; }
 .checkbox-field input { width: 1rem; height: 1rem; margin-top: 0.16rem; accent-color: var(--palette-blue-700); }
+.checkbox-copy { display: grid; gap: 0.1rem; }
+.checkbox-copy strong { color: var(--color-text); font-size: var(--font-size-sm); font-weight: 600; line-height: 1.4; }
 .button-primary, .button-secondary { display: inline-flex; min-height: 3rem; align-items: center; justify-content: center; padding: var(--space-3) var(--space-5); border: var(--border-width-hairline) solid transparent; border-radius: var(--radius-sm); font-weight: var(--font-weight-semibold); text-decoration: none; cursor: pointer; }
 .button-primary { width: 100%; color: var(--color-text-on-brand); background: var(--color-surface-brand); }
 .button-primary:hover { background: var(--palette-blue-700); }

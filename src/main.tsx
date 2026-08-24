@@ -736,7 +736,10 @@ function RegistrationPage() {
               />
               <label className="checkbox-field">
                 <input type="checkbox" checked={productUpdates} onChange={(event) => setProductUpdates(event.target.checked)} />
-                <span>Product updates (optional)</span>
+                <span className="checkbox-copy">
+                  <strong>News, tips, and offers</strong>
+                  <span>Be the first to know what’s new and what’s worth checking out.</span>
+                </span>
               </label>
               {state === "error" ? <p className="form-error" role="alert">{message}</p> : null}
               <button className="button-primary" type="submit" disabled={state === "submitting"}>
@@ -860,10 +863,10 @@ function PrivacyPage() {
     <ContentPage label="Privacy" title="Website privacy notice">
       <p className="prose-meta">Last updated: 23 August 2026</p>
       <p className="prose-lead">This notice describes the public FinStates website at finstates.app.</p>
-      <section><h2>Account and early access information</h2><p>When you register, we process your email address, confirmation status, early access status and, if selected, your consent to receive product updates. Your verified email becomes your FinStates account identity and can later be used to sign in to the desktop app. Confirming your email creates a website session so you can see that you are signed in.</p></section>
+      <section><h2>Account and early access information</h2><p>When you register, we process your email address, confirmation status, early access status and, if selected, your consent to receive news, tips and offers. Your verified email becomes your FinStates account identity and can later be used to sign in to the desktop app. Confirming your email creates a website session so you can see that you are signed in.</p></section>
       <section><h2>Security and service delivery</h2><p>We process limited technical request data to deliver and protect the website and registration service. Confirmation tokens are stored only as protected hashes with expiry and consumption records. Hosting, network and email providers process the information needed to deliver these services. The website uses a strictly necessary, secure session cookie for account status and sign-out. It does not accept document uploads or run advertising trackers.</p></section>
       <section><h2>When you contact us</h2><p>If you email us, we use the contact details and message content you provide to respond, maintain necessary correspondence and protect our services. We do not sell personal information received through company correspondence.</p></section>
-      <section><h2>Product updates</h2><p>If you separately select product updates, we may use your email to send occasional FinStates news. You can withdraw that choice by contacting us. Account confirmation, security and requested availability notices may still be sent as service messages.</p></section>
+      <section><h2>News, tips and offers</h2><p>If you separately select news, tips and offers, we may use your email to send occasional FinStates product news, guidance and promotions. You can withdraw that choice by contacting us. Account confirmation, security and requested availability notices may still be sent as service messages.</p></section>
       <section><h2>Retention and choices</h2><p>We retain account and early access records as needed to provide the requested account, operate promotions, prevent abuse and meet legal obligations. You can ask about your information or request correction or deletion by contacting us, subject to records we must retain.</p></section>
       <section><h2>Contact</h2><p>Questions can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p><p>{site.operator}, Shenzhen, Guangdong, China.</p></section>
     </ContentPage>
