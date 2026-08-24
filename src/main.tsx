@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { createRoot } from "react-dom/client";
+import Clarity from "@microsoft/clarity";
 import brandIconUrl from "./assets/icon-only.png";
 import "./design-tokens.css";
 import "./styles.css";
@@ -23,6 +24,34 @@ const site = {
     "Shenzhen, Guangdong 050300, China",
   ],
 } as const;
+
+const UMAMI_WEBSITE_ID = "57595eba-4e9b-48f5-a5c9-19dba5bb8ca6";
+const UMAMI_DOMAINS = "finstates.app,www.finstates.app";
+const CLARITY_PROJECT_ID = "y78akq9rol";
+
+let clarityStarted = false;
+
+function SiteAnalytics() {
+  useEffect(() => {
+    if (!import.meta.env.PROD) return;
+
+    if (!clarityStarted) {
+      clarityStarted = true;
+      Clarity.init(CLARITY_PROJECT_ID);
+    }
+
+    if (document.querySelector(`script[data-website-id="${UMAMI_WEBSITE_ID}"]`)) return;
+
+    const script = document.createElement("script");
+    script.defer = true;
+    script.src = "https://cloud.umami.is/script.js";
+    script.dataset.websiteId = UMAMI_WEBSITE_ID;
+    script.dataset.domains = UMAMI_DOMAINS;
+    document.head.append(script);
+  }, []);
+
+  return null;
+}
 
 const apiBase = import.meta.env.DEV
   ? "https://api.dev.finstates.app/v1"
@@ -862,10 +891,11 @@ function PricingPage() {
 function PrivacyPage() {
   return (
     <ContentPage label="Privacy" title="Website privacy notice">
-      <p className="prose-meta">Last updated: 23 August 2026</p>
+      <p className="prose-meta">Last updated: 24 August 2026</p>
       <p className="prose-lead">This notice describes the public FinStates website at finstates.app.</p>
       <section><h2>Account and early access information</h2><p>When you register, we process your email address, confirmation status, early access status and, if selected, your consent to receive news, tips and offers. Your verified email becomes your FinStates account identity and can later be used to sign in to the desktop app. Confirming your email creates a website session so you can see that you are signed in.</p></section>
       <section><h2>Security and service delivery</h2><p>We process limited technical request data to deliver and protect the website and registration service. Confirmation tokens are stored only as protected hashes with expiry and consumption records. Hosting, network and email providers process the information needed to deliver these services. The website uses a strictly necessary, secure session cookie for account status and sign-out. It does not accept document uploads or run advertising trackers.</p></section>
+      <section><h2>Website analytics</h2><p>We use Umami Cloud and Microsoft Clarity to understand and improve the public website. Umami provides cookieless, aggregated traffic information such as pages visited, referral source, country or region, browser, operating system and device type. Clarity uses analytics cookies and may record interactions such as clicks, scrolling and page views to produce heatmaps and session replays. We do not associate this analytics data with your FinStates account email.</p></section>
       <section><h2>When you contact us</h2><p>If you email us, we use the contact details and message content you provide to respond, maintain necessary correspondence and protect our services. We do not sell personal information received through company correspondence.</p></section>
       <section><h2>News, tips and offers</h2><p>If you separately select news, tips and offers, we may use your email to send occasional FinStates product news, guidance and promotions. You can withdraw that choice by contacting us. Account confirmation, security and requested availability notices may still be sent as service messages.</p></section>
       <section><h2>Retention and choices</h2><p>We retain account and early access records as needed to provide the requested account, operate promotions, prevent abuse and meet legal obligations. You can ask about your information or request correction or deletion by contacting us, subject to records we must retain.</p></section>
@@ -909,5 +939,5 @@ function resolvePage() {
 syncDocumentThemeColor();
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode><AccountProvider>{resolvePage()}</AccountProvider></StrictMode>,
+  <StrictMode><SiteAnalytics /><AccountProvider>{resolvePage()}</AccountProvider></StrictMode>,
 );

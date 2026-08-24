@@ -40,6 +40,10 @@ if (styleNames.length !== 1) fail(`expected one main CSS asset, found ${styleNam
 const script = await readFile(join(assetsDir.pathname, scriptNames[0]), "utf8");
 if (!script.includes("https://api.finstates.app/v1")) fail("production API base is absent from the JavaScript bundle");
 if (script.includes("https://api.dev.finstates.app/v1")) fail("development API base leaked into the production JavaScript bundle");
+if (!script.includes("https://cloud.umami.is/script.js")) fail("Umami tracker is absent from the JavaScript bundle");
+if (!script.includes("57595eba-4e9b-48f5-a5c9-19dba5bb8ca6")) fail("Umami website ID is absent from the JavaScript bundle");
+if (!script.includes("finstates.app,www.finstates.app")) fail("Umami domain restriction is absent from the JavaScript bundle");
+if (!script.includes("y78akq9rol")) fail("Microsoft Clarity project ID is absent from the JavaScript bundle");
 
 for (const path of applicationPages) {
   const html = await readFile(new URL(path, dist), "utf8");
