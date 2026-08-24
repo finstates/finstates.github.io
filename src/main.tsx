@@ -205,7 +205,6 @@ function SiteFooter() {
           <a href="/privacy/">Privacy</a>
           <a href="/terms/">Terms</a>
         </nav>
-        <p>© 2026 {site.operator}</p>
       </div>
     </footer>
   );
