@@ -61,6 +61,19 @@ type WebsiteAccount = {
   email: string;
   earlyAccessStatus: "registered" | "invited" | "activated" | null;
   earlyAccessVerifiedAt: string | null;
+  creditsBalance: number;
+  accountStatus: "free" | "paid";
+  processingSlotsUsed: number;
+  processingSlotsLimit: number;
+  processingReports: Array<{
+    slotId: string;
+    taskId: string;
+    fileName: string;
+    status: "occupied" | "cooldown";
+    occupiedAt: string;
+    cooldownUntil: string | null;
+  }>;
+  reportPageLimitExclusive: number | null;
 };
 
 type AccountState =
@@ -151,6 +164,7 @@ function syncDocumentThemeColor() {
 function SiteHeader() {
   const [compact, setCompact] = useState(false);
   const account = useAccount();
+  const isAccountRoute = window.location.pathname.startsWith("/account");
   const isRegistrationRoute = window.location.pathname.startsWith("/register");
 
   useEffect(() => {
@@ -174,9 +188,9 @@ function SiteHeader() {
           <img className="brand-icon" src={brandIconUrl} alt="" />
           <span>Fin<span className="brand-accent">States</span></span>
         </a>
-        {!isRegistrationRoute ? <nav className="header-actions" aria-label="Primary navigation">
+        {!isRegistrationRoute && !isAccountRoute ? <nav className="header-actions" aria-label="Primary navigation">
           {account.status === "signed-in" ? (
-            <a className="header-account" href="/register/" title={account.account.email}>
+            <a className="header-account" href="/account/" title={account.account.email}>
               <span className="status-dot" aria-hidden="true" />
               <span>{account.account.email}</span>
             </a>
@@ -672,6 +686,168 @@ function SupportPage() {
   );
 }
 
+function formatCredits(value: number) {
+  return new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(value);
+}
+
+function earlyAccessLabel(status: WebsiteAccount["earlyAccessStatus"]) {
+  if (status === "activated") return "Desktop activated";
+  if (status === "invited") return "Desktop access invited";
+  if (status === "registered") return "Early access registered";
+  return "FinStates account";
+}
+
+function AccountPage() {
+  const account = useAccount();
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (account.status === "signed-out") window.location.replace("/register/");
+  }, [account.status]);
+
+  if (account.status !== "signed-in") {
+    return (
+      <PageFrame>
+        <main id="main-content" className="account-loading page-width" aria-live="polite">Checking your account…</main>
+      </PageFrame>
+    );
+  }
+
+  const data = account.account;
+  const activated = data.earlyAccessStatus === "activated";
+  const capacityPercent = data.processingSlotsLimit > 0
+    ? Math.min(100, (data.processingSlotsUsed / data.processingSlotsLimit) * 100)
+    : 0;
+
+  const refresh = async () => {
+    setBusy(true);
+    setMessage("");
+    try {
+      await account.refresh();
+    } catch {
+      setMessage("We couldn’t refresh your account. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const signOut = async () => {
+    setBusy(true);
+    setMessage("");
+    try {
+      await account.signOut();
+      window.location.replace("/register/");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "We couldn’t sign you out. Please try again.");
+      setBusy(false);
+    }
+  };
+
+  return (
+    <PageFrame>
+      <main id="main-content" className="account-page page-width">
+        <header className="account-heading">
+          <div>
+            <p className="eyebrow">Account</p>
+            <h1>Your FinStates account.</h1>
+          </div>
+          <div className="account-identity">
+            <span className="account-live"><i aria-hidden="true" />Signed in</span>
+            <strong>{data.email}</strong>
+            <span>{earlyAccessLabel(data.earlyAccessStatus)}</span>
+          </div>
+        </header>
+
+        <section className="account-section" aria-labelledby="cloud-usage-title">
+          <div className="account-section-heading">
+            <div>
+              <p className="eyebrow">Cloud resources</p>
+              <h2 id="cloud-usage-title">Usage at a glance.</h2>
+            </div>
+            <button className="account-refresh" type="button" disabled={busy} onClick={() => void refresh()}>
+              {busy ? "Refreshing…" : "Refresh usage"}
+            </button>
+          </div>
+
+          {message ? <p className="form-error" role="alert">{message}</p> : null}
+
+          <div className="account-resource-grid">
+            <article className="account-resource-card account-credits-card">
+              <div className="account-card-label"><span>AI Credits</span><i>{data.accountStatus === "paid" ? "Paid" : "Free"}</i></div>
+              <p className="account-resource-value"><strong>{formatCredits(data.creditsBalance)}</strong><span>Credits remaining</span></p>
+              {!activated && data.earlyAccessStatus ? (
+                <div className="account-bonus-note">
+                  <span>+200</span>
+                  <p><strong>Promotional Credits pending</strong>Granted on your first Desktop sign-in and valid for 30 days.</p>
+                </div>
+              ) : (
+                <p className="account-card-footnote">Your live balance is shared with the FinStates Desktop app.</p>
+              )}
+            </article>
+
+            <article className="account-resource-card account-capacity-card">
+              <div className="account-card-label"><span>Report capacity</span><i>Cloud</i></div>
+              <p className="account-resource-value account-capacity-value"><strong>{data.processingSlotsUsed}<small> / {data.processingSlotsLimit}</small></strong><span>Reports in progress</span></p>
+              <div className="account-capacity-track" aria-label={`${data.processingSlotsUsed} of ${data.processingSlotsLimit} report slots in use`}>
+                <span style={{ width: `${capacityPercent}%` }} />
+              </div>
+              <p className="account-card-footnote">
+                {data.reportPageLimitExclusive === null
+                  ? "Your account can process up to five reports at the same time."
+                  : `Free accounts can process reports under ${data.reportPageLimitExclusive} pages.`}
+              </p>
+            </article>
+
+            <article className="account-resource-card account-access-card">
+              <div className="account-card-label"><span>Your access</span><i>{earlyAccessLabel(data.earlyAccessStatus)}</i></div>
+              <ol className="account-access-list">
+                <li data-complete="true"><span>✓</span><p><strong>Email confirmed</strong><small>Your account identity is verified.</small></p></li>
+                <li data-complete={data.earlyAccessStatus !== null}><span>{data.earlyAccessStatus ? "✓" : "—"}</span><p><strong>Early access registered</strong><small>{data.earlyAccessStatus ? "Your place is recorded." : "No early access registration."}</small></p></li>
+                <li data-complete={activated}><span>{activated ? "✓" : "—"}</span><p><strong>Desktop activated</strong><small>{activated ? "Your Desktop account is active." : "Complete your first Desktop sign-in."}</small></p></li>
+              </ol>
+            </article>
+          </div>
+
+          {data.processingReports.length > 0 ? (
+            <div className="account-processing-list">
+              <h3>Reports using cloud capacity</h3>
+              <ul>{data.processingReports.map((report) => (
+                <li key={report.slotId}>
+                  <span>{report.fileName}</span>
+                  <small>{report.status === "cooldown" ? "Cooling down" : "In progress"}</small>
+                </li>
+              ))}</ul>
+            </div>
+          ) : null}
+        </section>
+
+        <section className="account-calendar-section" aria-labelledby="account-calendar-title">
+          <header className="account-calendar-intro">
+            <div>
+              <p className="eyebrow">Talk with the founder</p>
+              <h2 id="account-calendar-title">Book 30 minutes with Wei.</h2>
+            </div>
+            <p>Choose a time for a focused online conversation about your workflow, FinStates, or early access. Your account email is filled in automatically.</p>
+          </header>
+          <div className="account-calendar-frame">
+            <iframe
+              title="Book a 30-minute online conversation with the FinStates founder"
+              src={`https://cal.com/wei-zhou-finstates-app/30min?embed=true&layout=month_view&theme=light&email=${encodeURIComponent(data.email)}`}
+              loading="lazy"
+            />
+          </div>
+        </section>
+
+        <footer className="account-footer-actions">
+          <div><strong>{data.email}</strong><span>FinStates account</span></div>
+          <button className="button-secondary" type="button" disabled={busy} onClick={() => void signOut()}>Sign out</button>
+        </footer>
+      </main>
+    </PageFrame>
+  );
+}
+
 function RegistrationPage() {
   const account = useAccount();
   const [email, setEmail] = useState("");
@@ -679,15 +855,9 @@ function RegistrationPage() {
   const [state, setState] = useState<"idle" | "submitting" | "sent" | "error">("idle");
   const [message, setMessage] = useState("");
 
-  const signOut = async () => {
-    setMessage("");
-    try {
-      await account.signOut();
-      setState("idle");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "We couldn’t sign you out. Please try again.");
-    }
-  };
+  useEffect(() => {
+    if (account.status === "signed-in") window.location.replace("/account/");
+  }, [account.status]);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -717,7 +887,7 @@ function RegistrationPage() {
       <main id="main-content" className="conversion-page page-width">
         <section className="conversion-copy" aria-labelledby="registration-title">
           <p className="eyebrow">Early access</p>
-          <h1 id="registration-title">{account.status === "signed-in" ? "Your FinStates account." : "Join early access."}</h1>
+          <h1 id="registration-title">Join early access.</h1>
         </section>
         <div className="conversion-benefits" aria-label="Registration benefits">
           <article className="registration-benefit">
@@ -730,14 +900,10 @@ function RegistrationPage() {
           </article>
         </div>
         <section className="registration-card" aria-label="Early access registration form">
-          {account.status === "signed-in" ? (
-            <div className="form-result account-result" role="status">
-              <span className="form-result-icon">✓</span>
-              <p className="eyebrow">Signed in</p>
-              <h2>You’re signed in.</h2>
-              <p><strong>{account.account.email}</strong></p>
-              {message ? <p className="form-error" role="alert">{message}</p> : null}
-              <button className="button-secondary" type="button" onClick={() => void signOut()}>Sign out</button>
+          {account.status === "loading" || account.status === "signed-in" ? (
+            <div className="form-result" role="status">
+              <p className="eyebrow">Account</p>
+              <h2>Checking your account…</h2>
             </div>
           ) : state === "sent" ? (
             <div className="form-result" role="status">
@@ -823,7 +989,7 @@ function RegistrationConfirmPage() {
               <p className="eyebrow">Account confirmed</p>
               <h1>You’re registered and signed in.</h1>
               <p><strong>{email}</strong> is now your FinStates account email. This browser is signed in, and the account indicator will remain visible in the navigation.</p>
-              <div className="confirmation-actions"><a className="button-primary" href="/register/">View my account</a><a className="button-secondary" href="/">Return home</a></div>
+              <div className="confirmation-actions"><a className="button-primary" href="/account/">View my account</a><a className="button-secondary" href="/">Return home</a></div>
             </>
           ) : state === "invalid" ? (
             <>
@@ -927,6 +1093,7 @@ function resolvePage() {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
   if (path === "/") return <HomePage />;
   if (path === "/support") return <SupportPage />;
+  if (path === "/account") return <AccountPage />;
   if (path === "/register") return <RegistrationPage />;
   if (path === "/register/confirm") return <RegistrationConfirmPage />;
   if (path === "/pricing") return <HomePage />;

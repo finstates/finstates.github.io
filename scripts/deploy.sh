@@ -98,7 +98,7 @@ for _ in $(seq 1 30); do
 done
 [[ "$live_ready" -eq 1 ]] || fail "GitHub Pages completed but the expected asset is not live."
 
-for route in / /register/ /register/confirm/ /privacy/ /terms/; do
+for route in / /account/ /register/ /register/confirm/ /privacy/ /terms/; do
   http_code="$(curl -sS -o /dev/null -w '%{http_code}' "https://finstates.app$route")"
   [[ "$http_code" == "200" ]] || fail "https://finstates.app$route returned HTTP $http_code."
 done

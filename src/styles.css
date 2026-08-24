@@ -734,10 +734,10 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
 .conversion-copy { grid-area: copy; }
 .conversion-benefits { display: grid; grid-area: benefits; gap: var(--layout-card-gap); }
 .conversion-copy h1, .pricing-header h1, .confirmation-card h1 { max-width: 12ch; margin: 0; color: var(--color-brand-strong); font-size: var(--font-size-3xl); font-weight: var(--font-weight-medium); letter-spacing: var(--letter-spacing-tight); line-height: var(--line-height-heading); }
-.conversion-copy h1 { max-width: none; font-size: clamp(2.75rem, 5vw, 4.5rem); }
+.conversion-copy h1 { max-width: none; }
 .registration-benefit { display: flex; min-height: 7.5rem; align-items: center; justify-content: space-between; gap: var(--space-6); padding: var(--space-5) var(--space-6); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
 .registration-benefit strong { display: flex; align-items: baseline; gap: var(--space-3); color: var(--color-brand-strong); }
-.registration-benefit strong b { font-family: var(--font-family-display); font-size: clamp(2.75rem, 5vw, 4.25rem); font-weight: var(--font-weight-medium); letter-spacing: -0.04em; line-height: 1; }
+.registration-benefit strong b { font-family: var(--font-family-display); font-size: var(--font-size-3xl); font-weight: var(--font-weight-medium); letter-spacing: -0.04em; line-height: 1; }
 .registration-benefit strong span { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
 .registration-benefit p { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-xs); text-align: right; }
 .registration-card, .confirmation-card { border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-xl); background: var(--color-surface-raised); box-shadow: var(--shadow-md); }
@@ -761,19 +761,84 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
 .form-legal a { color: var(--color-link); text-underline-offset: 0.16rem; }
 .form-error { padding: var(--space-3); border-radius: var(--radius-sm); color: #8b2530; background: #fff0f1; font-size: var(--font-size-sm); }
 .form-result { display: grid; justify-items: start; }
-.form-result h2 { max-width: none; margin-top: var(--space-5); }
-.form-result p { color: var(--color-text-secondary); line-height: var(--line-height-body); }
-.form-result .button-secondary { margin-top: var(--space-4); }
+.form-result h2 { max-width: none; margin: var(--space-4) 0 var(--space-2); font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); letter-spacing: -0.018em; }
+.form-result p { margin: var(--space-2) 0; color: var(--color-text-secondary); font-size: var(--font-size-md); line-height: var(--line-height-body); }
+.form-result .button-secondary { min-height: 2.75rem; margin-top: var(--space-4); padding: var(--space-2) var(--space-4); }
 .account-result .eyebrow { margin-top: var(--space-6); margin-bottom: 0; }
 .account-result h2 { margin-top: var(--space-3); }
 .account-result .form-error { color: #8b2530; }
-.form-result-icon { display: grid; width: 3rem; height: 3rem; place-items: center; border-radius: 50%; color: #237747; background: #e0f3e8; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+.form-result-icon { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: 50%; color: #237747; background: #e0f3e8; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
 .confirmation-page { display: grid; min-height: 82vh; place-items: center; padding-block: clamp(8rem, 15vh, 11rem) var(--layout-section-block); }
-.confirmation-card { width: min(100%, 42rem); padding: clamp(var(--space-8), 6vw, var(--space-16)); }
-.confirmation-card h1 { max-width: 14ch; }
-.confirmation-card > p:not(.eyebrow) { margin: var(--space-6) 0; color: var(--color-text-secondary); font-size: var(--font-size-lg); line-height: var(--line-height-body); }
+.confirmation-card { width: min(100%, 36rem); padding: clamp(var(--space-6), 4vw, var(--space-10)); }
+.confirmation-card h1 { max-width: 18ch; font-size: clamp(2rem, 3vw, 2.25rem); font-weight: var(--font-weight-semibold); letter-spacing: -0.025em; }
+.confirmation-card > p:not(.eyebrow) { margin: var(--space-5) 0; color: var(--color-text-secondary); font-size: var(--font-size-md); line-height: var(--line-height-body); }
 .confirmation-card > .button-primary, .confirmation-actions .button-primary { width: auto; }
-.confirmation-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+.confirmation-card > .button-primary { min-height: 2.75rem; padding: var(--space-2) var(--space-4); }
+.confirmation-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
+
+/* Signed-in account center. */
+.page-shell:has(.account-page) { background: linear-gradient(180deg, #f4f8fd 0, #fff 42rem); }
+.page-shell:has(.account-page) .site-footer { background: transparent; }
+.account-loading { display: grid; min-height: 82vh; place-items: center; padding-top: var(--layout-header-height); color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.account-page { padding-block: clamp(7.5rem, 13vh, 10rem) var(--layout-section-block); }
+.account-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, auto); gap: var(--space-8); align-items: end; padding-bottom: var(--space-10); border-bottom: var(--border-width-hairline) solid var(--color-border-default); }
+.account-heading h1 { max-width: 13ch; margin: 0; font-size: clamp(2.8rem, 5vw, 4.75rem); font-weight: var(--font-weight-medium); letter-spacing: -0.04em; line-height: 1.02; }
+.account-identity { display: grid; min-width: 18rem; justify-items: start; gap: var(--space-2); padding: var(--space-5) var(--space-6); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: rgb(255 255 255 / 82%); box-shadow: var(--shadow-sm); backdrop-filter: blur(var(--header-backdrop-blur)); }
+.account-identity strong { max-width: 22rem; overflow: hidden; color: var(--color-brand-strong); font-size: var(--font-size-md); text-overflow: ellipsis; white-space: nowrap; }
+.account-identity > span:last-child { color: var(--color-text-muted); font-size: var(--font-size-xs); }
+.account-live { display: inline-flex; align-items: center; gap: var(--space-2); color: #237747; font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); letter-spacing: 0.04em; text-transform: uppercase; }
+.account-live i { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: #2b8a57; box-shadow: 0 0 0 var(--space-1) #e0f3e8; }
+.account-section { margin-top: clamp(var(--space-16), 7vw, var(--space-24)); }
+.account-section-heading, .account-calendar-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.66fr); gap: var(--space-8); align-items: end; }
+.account-section-heading h2, .account-calendar-intro h2 { max-width: 16ch; margin: 0; font-size: clamp(2rem, 3.5vw, 3rem); font-weight: var(--font-weight-medium); letter-spacing: -0.03em; line-height: var(--line-height-heading); }
+.account-refresh { justify-self: end; padding: var(--space-2) 0; border: 0; color: var(--color-link); background: transparent; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); cursor: pointer; }
+.account-refresh:hover { color: var(--color-link-hover); }
+.account-refresh:disabled { cursor: wait; opacity: 0.6; }
+.account-section > .form-error { margin-top: var(--space-5); }
+.account-resource-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.82fr) minmax(0, 1fr); gap: var(--layout-card-gap); margin-top: var(--space-8); }
+.account-resource-card { display: flex; min-width: 0; min-height: 23rem; flex-direction: column; padding: clamp(var(--space-5), 3vw, var(--space-8)); overflow: hidden; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); }
+.account-credits-card { background: linear-gradient(145deg, #fff 0%, #f4f8fd 100%); }
+.account-card-label { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: var(--space-3); color: var(--color-text-muted); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); letter-spacing: 0.05em; text-transform: uppercase; }
+.account-card-label i { max-width: 12rem; overflow: hidden; padding: 0.28rem var(--space-2); border-radius: var(--radius-pill); color: var(--color-link); background: var(--palette-blue-100); font-style: normal; font-weight: var(--font-weight-semibold); letter-spacing: 0; text-overflow: ellipsis; text-transform: none; white-space: nowrap; }
+.account-resource-value { display: grid; gap: var(--space-2); margin: auto 0 var(--space-6); }
+.account-resource-value strong { color: var(--color-brand-strong); font-family: var(--font-family-display); font-size: clamp(4rem, 7vw, 6rem); font-weight: var(--font-weight-medium); letter-spacing: -0.055em; line-height: 0.95; }
+.account-resource-value > span { color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.account-capacity-value strong { font-size: clamp(3.5rem, 6vw, 5rem); }
+.account-capacity-value small { color: var(--color-text-soft); font-size: 0.48em; font-weight: var(--font-weight-medium); letter-spacing: -0.025em; }
+.account-bonus-note { display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: center; padding: var(--space-4); border: var(--border-width-hairline) solid rgb(189 121 0 / 22%); border-radius: var(--radius-md); background: var(--color-accent-soft); }
+.account-bonus-note > span { color: var(--color-accent-strong); font-family: var(--font-family-display); font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); letter-spacing: -0.035em; }
+.account-bonus-note p { display: grid; gap: 0.1rem; margin: 0; color: var(--color-text-muted); font-size: var(--font-size-xs); line-height: 1.45; }
+.account-bonus-note strong { color: var(--color-text-primary); }
+.account-card-footnote { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-xs); line-height: 1.55; }
+.account-capacity-track { height: 0.45rem; margin-bottom: var(--space-5); overflow: hidden; border-radius: var(--radius-pill); background: var(--palette-slate-100); }
+.account-capacity-track span { display: block; height: 100%; min-width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--palette-blue-500), var(--palette-blue-700)); transition: width var(--duration-normal) var(--ease-standard); }
+.account-access-card { background: var(--palette-ink-950); }
+.account-access-card .account-card-label { color: rgb(255 255 255 / 58%); }
+.account-access-card .account-card-label i { color: var(--color-accent-soft); background: rgb(255 255 255 / 9%); }
+.account-access-list { display: grid; gap: 0; margin: auto 0 0; padding: 0; list-style: none; }
+.account-access-list li { position: relative; display: grid; grid-template-columns: 2rem 1fr; gap: var(--space-3); padding-block: var(--space-4); }
+.account-access-list li + li { border-top: 1px solid rgb(255 255 255 / 10%); }
+.account-access-list li > span { display: grid; width: 1.65rem; height: 1.65rem; place-items: center; border-radius: 50%; color: rgb(255 255 255 / 42%); background: rgb(255 255 255 / 8%); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); }
+.account-access-list li[data-complete="true"] > span { color: #237747; background: #dff4e7; }
+.account-access-list p { display: grid; gap: var(--space-1); margin: 0; }
+.account-access-list strong { color: var(--color-text-on-brand); font-size: var(--font-size-sm); }
+.account-access-list small { color: rgb(255 255 255 / 54%); font-size: var(--font-size-xs); line-height: 1.4; }
+.account-processing-list { margin-top: var(--layout-card-gap); padding: var(--space-6); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
+.account-processing-list h3 { margin: 0 0 var(--space-4); font-size: var(--font-size-lg); }
+.account-processing-list ul { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+.account-processing-list li { display: flex; min-width: 0; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-3); border-top: var(--border-width-hairline) solid var(--color-border-subtle); color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.account-processing-list li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.account-processing-list li small { flex: 0 0 auto; color: var(--color-text-muted); }
+.account-calendar-section { margin-top: clamp(var(--space-20), 9vw, var(--space-32)); padding: clamp(var(--space-6), 4vw, var(--space-10)); border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-xl); background: var(--color-surface-raised); box-shadow: var(--shadow-md); }
+.account-calendar-intro { align-items: start; margin-bottom: var(--space-8); }
+.account-calendar-intro > p { max-width: 34rem; margin: var(--space-5) 0 0; color: var(--color-text-secondary); line-height: var(--line-height-body); }
+.account-calendar-frame { min-height: 43rem; overflow: hidden; border: var(--border-width-hairline) solid var(--color-border-default); border-radius: var(--radius-lg); background: var(--color-surface-canvas); }
+.account-calendar-frame iframe { display: block; width: 100%; height: 43rem; border: 0; }
+.account-footer-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); margin-top: var(--space-10); padding-top: var(--space-8); border-top: var(--border-width-hairline) solid var(--color-border-default); }
+.account-footer-actions > div { display: grid; gap: var(--space-1); min-width: 0; }
+.account-footer-actions strong { overflow: hidden; color: var(--color-brand-strong); font-size: var(--font-size-sm); text-overflow: ellipsis; white-space: nowrap; }
+.account-footer-actions span { color: var(--color-text-muted); font-size: var(--font-size-xs); }
+.account-footer-actions .button-secondary { flex: 0 0 auto; }
 
 /* Pricing. */
 .pricing-page { padding-block: clamp(9rem, 17vh, 12rem) var(--layout-section-block); }
@@ -817,6 +882,11 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
   .window-body { grid-template-columns: 0.78fr 1.22fr; }
   .source-document { padding-inline: var(--space-3); }
   .footer-main { grid-template-columns: minmax(18rem, 1.5fr) repeat(3, 1fr); }
+  .account-resource-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .account-access-card { grid-column: 1 / -1; min-height: auto; }
+  .account-access-list { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: var(--space-8); }
+  .account-access-list li { padding: 0 var(--space-4); }
+  .account-access-list li + li { border-top: 0; border-left: 1px solid rgb(255 255 255 / 10%); }
 }
 
 @media (max-width: 860px) {
@@ -857,6 +927,9 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
   .pricing-cta .button-primary { width: 100%; }
   .meet-gate { grid-template-columns: 1fr; align-content: center; }
   .meet-gate .launch-cta { width: 100%; justify-self: stretch; }
+  .account-heading, .account-section-heading, .account-calendar-intro { grid-template-columns: 1fr; align-items: start; }
+  .account-identity { width: 100%; }
+  .account-refresh { justify-self: start; }
 }
 
 @media (max-width: 640px) {
@@ -935,6 +1008,18 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
   .footer-simple { grid-template-columns: 1fr; }
   .footer-links { justify-self: start; }
   .footer-simple > p { grid-column: auto; }
+  .account-page { padding-top: 7rem; }
+  .account-heading h1 { font-size: clamp(2.7rem, 13vw, 3.75rem); }
+  .account-identity { min-width: 0; padding: var(--space-4); }
+  .account-resource-grid { grid-template-columns: 1fr; }
+  .account-resource-card { min-height: 20rem; }
+  .account-access-card { grid-column: auto; }
+  .account-access-list { grid-template-columns: 1fr; }
+  .account-access-list li { padding: var(--space-4) 0; }
+  .account-access-list li + li { border-top: 1px solid rgb(255 255 255 / 10%); border-left: 0; }
+  .account-calendar-section { padding: var(--space-4); }
+  .account-calendar-frame, .account-calendar-frame iframe { min-height: 46rem; height: 46rem; }
+  .account-footer-actions { align-items: flex-start; flex-direction: column; }
 }
 
 @media (max-width: 420px) {

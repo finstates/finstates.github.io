@@ -5,6 +5,7 @@ const root = new URL("../", import.meta.url);
 const dist = new URL("dist/", root);
 const requiredFiles = [
   "index.html",
+  "account/index.html",
   "pricing/index.html",
   "privacy/index.html",
   "register/index.html",
