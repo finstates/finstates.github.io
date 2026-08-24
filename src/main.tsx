@@ -745,6 +745,7 @@ function RegistrationPage() {
               <button className="button-primary" type="submit" disabled={state === "submitting"}>
                 {state === "submitting" ? "Sending…" : "Continue with email"}
               </button>
+              <p className="form-legal">By continuing, you agree to the <a href="/terms/">Website Terms</a> and acknowledge the <a href="/privacy/">Privacy Notice</a>.</p>
             </form>
           )}
         </section>

@@ -757,6 +757,8 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
 .button-primary:hover { background: var(--palette-blue-700); }
 .button-primary:disabled { cursor: wait; opacity: 0.65; }
 .button-secondary { color: var(--color-link); border-color: var(--color-border-default); background: var(--color-surface-canvas); }
+.form-legal { margin: var(--space-4) 0 0; color: var(--color-text-muted); font-size: var(--font-size-xs); line-height: 1.55; }
+.form-legal a { color: var(--color-link); text-underline-offset: 0.16rem; }
 .form-error { padding: var(--space-3); border-radius: var(--radius-sm); color: #8b2530; background: #fff0f1; font-size: var(--font-size-sm); }
 .form-result { display: grid; justify-items: start; }
 .form-result h2 { max-width: none; margin-top: var(--space-5); }

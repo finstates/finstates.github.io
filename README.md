@@ -37,3 +37,44 @@ Signed desktop apps will be published on **GitHub Releases** — macOS first, Wi
 ## Company
 
 FinStates is developed and operated by **Shenzhen Little Fish Cat Technology Co., Ltd.**, Shenzhen, Guangdong, China.
+
+## Development and deployment
+
+### Runtime
+
+| Layer | Technology | Production |
+|---|---|---|
+| Website | React 18, TypeScript 5.7, Vite 6 | Static files on GitHub Pages |
+| Toolchain | Node.js 22, pnpm 11.0.6 | GitHub Actions on Ubuntu |
+| Registration API | Cloudflare Worker, Hono, D1, SMTP | `https://api.finstates.app/v1` |
+
+The website contains no deploy-time secrets. Vite development builds call `https://api.dev.finstates.app/v1`; production builds must contain only `https://api.finstates.app/v1`. The platform API and D1 database are deployed independently from the private FinStates repository.
+
+### Local checks
+
+```bash
+pnpm install --frozen-lockfile
+pnpm check
+pnpm preview
+```
+
+`pnpm check` compiles every page and verifies the production API, custom domain, required routes and generated assets.
+
+### Production deployment
+
+Requirements: a clean `main` branch, committed changes, `git`, `curl`, `jq`, and an authenticated GitHub CLI with repository and Actions access.
+
+```bash
+pnpm deploy:dry-run
+pnpm deploy -- --confirm DEPLOY_SITE
+```
+
+The deployment script:
+
+1. validates the toolchain, repository, branch and clean worktree;
+2. installs the frozen dependency graph and runs `pnpm check`;
+3. rejects a local branch behind `origin/main`;
+4. pushes an unpublished commit or dispatches the Pages workflow for the current commit;
+5. waits for GitHub Actions and verifies the deployed asset, public routes and registration API contract.
+
+GitHub Actions is the only production website deployment path. A normal push to `main` also triggers `.github/workflows/deploy.yml`. To withdraw a bad website release, revert its commit on `main` and run the same deployment command; do not overwrite a historical build.
