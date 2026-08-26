@@ -1043,62 +1043,84 @@ function RegistrationPage() {
 
 function RegistrationConfirmPage() {
   const account = useAccount();
-  const [state, setState] = useState<"ready" | "submitting" | "confirmed" | "invalid">("ready");
-  const [email, setEmail] = useState("");
-  const token = new URLSearchParams(window.location.hash.replace(/^#/, "")).get("token") ?? "";
+  const [state, setState] = useState<"confirming" | "invalid" | "error" | "sign-in-error">("confirming");
+  const [token] = useState(() => (
+    new URLSearchParams(window.location.hash.replace(/^#/, "")).get("token") ?? ""
+  ));
+  const confirmationStarted = useRef(false);
 
   useEffect(() => {
-    if (!token) setState("invalid");
-  }, [token]);
-
-  const confirm = async () => {
-    if (!token || state === "submitting") return;
-    setState("submitting");
-    try {
-      const response = await fetch(`${apiBase}/early-access/registrations/confirm`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      const body = await response.json().catch(() => null) as { email?: string } | null;
-      if (!response.ok || !body?.email) throw new Error("invalid");
-      setEmail(body.email);
-      await account.refresh();
-      window.history.replaceState(null, "", window.location.pathname);
-      setState("confirmed");
-    } catch {
-      setState("invalid");
+    if (account.status === "loading") return;
+    if (account.status === "signed-in") {
+      window.location.replace("/account/");
+      return;
     }
-  };
+    if (!token) {
+      setState("invalid");
+      return;
+    }
+    if (confirmationStarted.current) return;
+    confirmationStarted.current = true;
+
+    void (async () => {
+      try {
+        const response = await fetch(`${apiBase}/early-access/registrations/confirm`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+        const body = await response.json().catch(() => null) as { email?: string } | null;
+        if (response.status === 401) {
+          setState("invalid");
+          return;
+        }
+        if (!response.ok || !body?.email) {
+          setState("error");
+          return;
+        }
+        const signedInAccount = await account.refresh();
+        if (!signedInAccount) {
+          setState("sign-in-error");
+          return;
+        }
+        window.location.replace("/account/");
+      } catch {
+        setState("error");
+      }
+    })();
+  }, [account.status, account.refresh, token]);
 
   return (
     <PageFrame>
       <main id="main-content" className="confirmation-page page-width">
-        <section className="confirmation-card">
-          {state === "confirmed" ? (
-            <>
-              <span className="form-result-icon">✓</span>
-              <p className="eyebrow">Account confirmed</p>
-              <h1>You’re registered and signed in.</h1>
-              <p><strong>{email}</strong> is now your FinStates account email. This browser is signed in, and the account indicator will remain visible in the navigation.</p>
-              <div className="confirmation-actions"><a className="button-primary" href="/account/">View my account</a><a className="button-secondary" href="/">Return home</a></div>
-            </>
-          ) : state === "invalid" ? (
+        <section className="confirmation-card" aria-live="polite">
+          {state === "invalid" ? (
             <>
               <p className="eyebrow">Confirmation link</p>
               <h1>This link is invalid or has expired.</h1>
               <p>Request a new confirmation email to continue.</p>
-              <a className="button-primary" href="/register/">Return to registration</a>
+              <a className="button-primary" href="/register/">Send a new email</a>
+            </>
+          ) : state === "sign-in-error" ? (
+            <>
+              <p className="eyebrow">Email confirmed</p>
+              <h1>Sign-in didn’t finish.</h1>
+              <p>Your account is ready, but this browser could not be signed in. Request a new email to continue.</p>
+              <a className="button-primary" href="/register/">Send a new email</a>
+            </>
+          ) : state === "error" ? (
+            <>
+              <p className="eyebrow">Confirmation unavailable</p>
+              <h1>We couldn’t confirm your email.</h1>
+              <p>Please try the email link again.</p>
+              <a className="button-primary" href="/register/">Return to sign in</a>
             </>
           ) : (
             <>
-              <p className="eyebrow">Confirm your email</p>
-              <h1>Create your FinStates account.</h1>
-              <p>This confirms your email, registers your early access account and signs this browser in.</p>
-              <button className="button-primary" type="button" onClick={() => void confirm()} disabled={state === "submitting"}>
-                {state === "submitting" ? "Confirming…" : "Confirm early access"}
-              </button>
+              <p className="eyebrow">Account</p>
+              <h1>Confirming and signing you in…</h1>
+              <p>You’ll go directly to your account.</p>
             </>
           )}
         </section>

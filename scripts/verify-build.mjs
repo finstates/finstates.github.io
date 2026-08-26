@@ -45,6 +45,9 @@ if (!script.includes("https://cloud.umami.is/script.js")) fail("Umami tracker is
 if (!script.includes("57595eba-4e9b-48f5-a5c9-19dba5bb8ca6")) fail("Umami website ID is absent from the JavaScript bundle");
 if (!script.includes("finstates.app,www.finstates.app")) fail("Umami domain restriction is absent from the JavaScript bundle");
 if (!script.includes("y78akq9rol")) fail("Microsoft Clarity project ID is absent from the JavaScript bundle");
+if (!script.includes("Confirming and signing you in")) fail("automatic registration confirmation state is absent from the JavaScript bundle");
+if (script.includes("Confirm early access")) fail("obsolete second confirmation action remains in the JavaScript bundle");
+if (script.includes("View my account")) fail("obsolete account redirect action remains in the JavaScript bundle");
 
 for (const path of applicationPages) {
   const html = await readFile(new URL(path, dist), "utf8");
