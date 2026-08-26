@@ -154,7 +154,6 @@ function syncDocumentThemeColor() {
 function SiteHeader() {
   const [compact, setCompact] = useState(false);
   const account = useAccount();
-  const isAccountRoute = window.location.pathname.startsWith("/account");
   const isRegistrationRoute = window.location.pathname.startsWith("/register");
 
   useEffect(() => {
@@ -180,7 +179,7 @@ function SiteHeader() {
           </span>
           <span>Fin<span className="brand-accent">States</span></span>
         </a>
-        {!isRegistrationRoute && !isAccountRoute ? <nav className="header-actions" aria-label="Primary navigation">
+        {!isRegistrationRoute ? <nav className="header-actions" aria-label="Primary navigation">
           {account.status === "signed-in" ? (
             <a className="header-account" href="/account/" title={account.account.email}>
               <span className="status-dot" aria-hidden="true" />
