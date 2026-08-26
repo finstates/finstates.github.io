@@ -541,7 +541,8 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
 .form-result-icon { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: 50%; color: var(--color-success-primary); background: var(--color-success-soft); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
 .confirmation-page { display: grid; min-height: 82vh; place-items: center; padding-block: clamp(8rem, 15vh, 11rem) var(--layout-section-block); }
 .confirmation-card { width: min(100%, 36rem); padding: clamp(var(--space-6), 4vw, var(--space-10)); }
-.confirmation-card h1 { max-width: 18ch; font-size: clamp(2rem, 3vw, 2.25rem); font-weight: var(--font-weight-semibold); letter-spacing: -0.025em; }
+.confirmation-card .eyebrow { font-size: 0.6875rem; }
+.confirmation-card h1 { max-width: none; font-size: clamp(1.75rem, 2.5vw, 1.875rem); font-weight: var(--font-weight-semibold); letter-spacing: -0.025em; white-space: nowrap; }
 .confirmation-card > p:not(.eyebrow) { margin: var(--space-5) 0; color: var(--color-text-secondary); font-size: var(--font-size-md); line-height: var(--line-height-body); }
 .confirmation-card > .button-primary, .confirmation-actions .button-primary { width: auto; }
 .confirmation-card > .button-primary { min-height: 2.75rem; padding: var(--space-2) var(--space-4); }
@@ -748,6 +749,7 @@ h2 { max-width: 18ch; margin: 0; font-size: var(--font-size-3xl); font-weight: v
   .account-settings-header { margin-bottom: var(--space-6); }
   .account-settings-section { margin-top: var(--space-6); }
   .account-settings-row, .account-access-list li { padding-inline: var(--space-4); }
+  .confirmation-card h1 { white-space: normal; }
 }
 
 @media (max-width: 420px) {

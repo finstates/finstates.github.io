@@ -1120,7 +1120,6 @@ function RegistrationConfirmPage() {
             <>
               <p className="eyebrow">Account</p>
               <h1>Confirming and signing you in…</h1>
-              <p>You’ll go directly to your account.</p>
             </>
           )}
         </section>
