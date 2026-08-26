@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import { createRoot } from "react-dom/client";
+import { getCalApi } from "@calcom/embed-react";
 import Clarity from "@microsoft/clarity";
 import brandIconUrl from "./assets/icon-only.png";
 import "./design-tokens.css";
@@ -754,6 +755,13 @@ function AccountPage() {
     if (account.status === "signed-out") window.location.replace("/register/");
   }, [account.status]);
 
+  useEffect(() => {
+    void (async () => {
+      const cal = await getCalApi({ namespace: "30min" });
+      cal("ui", { hideEventTypeDetails: true, layout: "month_view" });
+    })();
+  }, []);
+
   if (account.status !== "signed-in") {
     return (
       <PageFrame>
@@ -764,9 +772,6 @@ function AccountPage() {
 
   const data = account.account;
   const activated = data.earlyAccessStatus === "activated";
-  const capacityPercent = data.processingSlotsLimit > 0
-    ? Math.min(100, (data.processingSlotsUsed / data.processingSlotsLimit) * 100)
-    : 0;
 
   const refresh = async () => {
     setBusy(true);
@@ -795,102 +800,126 @@ function AccountPage() {
   return (
     <PageFrame>
       <main id="main-content" className="account-page page-width">
-        <header className="account-heading">
-          <div>
-            <p className="eyebrow">Account</p>
-            <h1>Your FinStates account.</h1>
-          </div>
-          <div className="account-identity">
-            <span className="account-live"><i aria-hidden="true" />Signed in</span>
-            <strong>{data.email}</strong>
-            <span>{earlyAccessLabel(data.earlyAccessStatus)}</span>
-          </div>
-        </header>
+        <div className="account-settings">
+          <header className="account-settings-header">
+            <h1>Account</h1>
+            <p>Manage your account, usage and access.</p>
+          </header>
 
-        <section className="account-section" aria-labelledby="cloud-usage-title">
-          <div className="account-section-heading">
-            <div>
-              <p className="eyebrow">Cloud resources</p>
-              <h2 id="cloud-usage-title">Usage at a glance.</h2>
+          <section className="account-settings-panel" aria-label="Account details">
+            <dl className="account-settings-list">
+              <div className="account-settings-row">
+                <dt><strong>Email</strong></dt>
+                <dd>{data.email}</dd>
+              </div>
+              <div className="account-settings-row">
+                <dt><strong>Status</strong></dt>
+                <dd><span className="account-live"><i aria-hidden="true" />Signed in</span></dd>
+              </div>
+              <div className="account-settings-row">
+                <dt><strong>Account type</strong></dt>
+                <dd>{data.accountStatus === "paid" ? "Paid" : "Free"}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section className="account-settings-section" aria-labelledby="cloud-usage-title">
+            <div className="account-settings-section-heading">
+              <h2 id="cloud-usage-title">Cloud usage</h2>
+              <button className="account-refresh" type="button" disabled={busy} onClick={() => void refresh()}>
+                {busy ? "Refreshing…" : "Refresh usage"}
+              </button>
             </div>
-            <button className="account-refresh" type="button" disabled={busy} onClick={() => void refresh()}>
-              {busy ? "Refreshing…" : "Refresh usage"}
-            </button>
-          </div>
 
-          {message ? <p className="form-error" role="alert">{message}</p> : null}
+            {message ? <p className="form-error" role="alert">{message}</p> : null}
 
-          <div className="account-resource-grid">
-            <article className="account-resource-card account-credits-card">
-              <div className="account-card-label"><span>AI Credits</span><i>{data.accountStatus === "paid" ? "Paid" : "Free"}</i></div>
-              <p className="account-resource-value"><strong>{formatCredits(data.creditsBalance)}</strong><span>Credits remaining</span></p>
+            <div className="account-settings-panel">
+              <div className="account-settings-row">
+                <div className="account-setting-copy"><strong>AI Credits</strong><small>Credits available for AI-powered processing</small></div>
+                <span className="account-setting-value">{formatCredits(data.creditsBalance)}</span>
+              </div>
               {!activated && data.earlyAccessStatus ? (
-                <div className="account-bonus-note">
-                  <span>+200</span>
-                  <p><strong>Promotional Credits pending</strong>Granted on your first Desktop sign-in and valid for 30 days.</p>
+                <div className="account-settings-row">
+                  <div className="account-setting-copy"><strong>Promotional Credits</strong><small>Granted on your first Desktop sign-in · Valid for 30 days</small></div>
+                  <span className="account-setting-value account-setting-bonus">+200 pending</span>
                 </div>
               ) : (
-                <p className="account-card-footnote">Your live balance is shared with the FinStates Desktop app.</p>
+                <div className="account-settings-row">
+                  <div className="account-setting-copy"><strong>Credits balance</strong><small>Shared with the FinStates Desktop app</small></div>
+                  <span className="account-setting-value">Live</span>
+                </div>
               )}
-            </article>
-
-            <article className="account-resource-card account-capacity-card">
-              <div className="account-card-label"><span>Report capacity</span><i>Cloud</i></div>
-              <p className="account-resource-value account-capacity-value"><strong>{data.processingSlotsUsed}<small> / {data.processingSlotsLimit}</small></strong><span>Reports in progress</span></p>
-              <div className="account-capacity-track" aria-label={`${data.processingSlotsUsed} of ${data.processingSlotsLimit} report slots in use`}>
-                <span style={{ width: `${capacityPercent}%` }} />
+              <div className="account-settings-row">
+                <div className="account-setting-copy">
+                  <strong>Reports in progress</strong>
+                  <small>{data.reportPageLimitExclusive === null
+                    ? `Your account can process up to ${data.processingSlotsLimit} reports at the same time`
+                    : `Free accounts can process reports under ${data.reportPageLimitExclusive} pages`}</small>
+                </div>
+                <span className="account-setting-value">{data.processingSlotsUsed} of {data.processingSlotsLimit}</span>
               </div>
-              <p className="account-card-footnote">
-                {data.reportPageLimitExclusive === null
-                  ? "Your account can process up to five reports at the same time."
-                  : `Free accounts can process reports under ${data.reportPageLimitExclusive} pages.`}
-              </p>
-            </article>
-
-            <article className="account-resource-card account-access-card">
-              <div className="account-card-label"><span>Your access</span><i>{earlyAccessLabel(data.earlyAccessStatus)}</i></div>
-              <ol className="account-access-list">
-                <li data-complete="true"><span>✓</span><p><strong>Email confirmed</strong><small>Your account identity is verified.</small></p></li>
-                <li data-complete={data.earlyAccessStatus !== null}><span>{data.earlyAccessStatus ? "✓" : "—"}</span><p><strong>Early access registered</strong><small>{data.earlyAccessStatus ? "Your place is recorded." : "No early access registration."}</small></p></li>
-                <li data-complete={activated}><span>{activated ? "✓" : "—"}</span><p><strong>Desktop activated</strong><small>{activated ? "Your Desktop account is active." : "Complete your first Desktop sign-in."}</small></p></li>
-              </ol>
-            </article>
-          </div>
-
-          {data.processingReports.length > 0 ? (
-            <div className="account-processing-list">
-              <h3>Reports using cloud capacity</h3>
-              <ul>{data.processingReports.map((report) => (
-                <li key={report.slotId}>
-                  <span>{report.fileName}</span>
-                  <small>{report.status === "cooldown" ? "Cooling down" : "In progress"}</small>
-                </li>
-              ))}</ul>
+              {data.processingReports.map((report) => (
+                <div className="account-settings-row" key={report.slotId}>
+                  <div className="account-setting-copy"><strong>{report.fileName}</strong><small>Cloud processing report</small></div>
+                  <span className="account-setting-value">{report.status === "cooldown" ? "Cooling down" : "In progress"}</span>
+                </div>
+              ))}
             </div>
-          ) : null}
-        </section>
+          </section>
 
-        <section className="account-calendar-section" aria-labelledby="account-calendar-title">
-          <header className="account-calendar-intro">
-            <div>
-              <p className="eyebrow">Talk with the founder</p>
-              <h2 id="account-calendar-title">Book 30 minutes with Wei.</h2>
+          <section className="account-settings-section" aria-labelledby="account-access-title">
+            <div className="account-settings-section-heading"><h2 id="account-access-title">Access</h2></div>
+            <ol className="account-settings-panel account-access-list">
+              <li>
+                <span className="account-access-icon" data-complete="true">✓</span>
+                <p><strong>Email confirmed</strong><small>Your account identity is verified</small></p>
+                <span className="account-setting-state">Confirmed</span>
+              </li>
+              <li>
+                <span className="account-access-icon" data-complete={data.earlyAccessStatus !== null}>{data.earlyAccessStatus ? "✓" : "—"}</span>
+                <p><strong>Early access registered</strong><small>{data.earlyAccessStatus ? "Your place is recorded" : "No early access registration"}</small></p>
+                <span className="account-setting-state">{data.earlyAccessStatus ? "Registered" : "Not registered"}</span>
+              </li>
+              <li>
+                <span className="account-access-icon" data-complete={activated}>{activated ? "✓" : "—"}</span>
+                <p><strong>Desktop activation</strong><small>{activated ? "Your Desktop account is active" : "Complete your first Desktop sign-in"}</small></p>
+                <span className="account-setting-state">{activated ? "Active" : "Pending"}</span>
+              </li>
+            </ol>
+          </section>
+
+          <section className="account-settings-section" aria-labelledby="account-calendar-title">
+            <div className="account-settings-section-heading"><h2 id="account-calendar-title">Conversation</h2></div>
+            <div className="account-settings-panel account-conversation-panel">
+              <div className="account-settings-row">
+                <div className="account-setting-copy"><strong>Book a 30-minute conversation</strong><small>Choose a time to discuss your workflow or FinStates</small></div>
+                <button
+                  className="button-secondary account-calendar-button"
+                  type="button"
+                  data-cal-namespace="30min"
+                  data-cal-link="wei-zhou-finstates-app/30min"
+                  data-cal-config={JSON.stringify({
+                    email: data.email,
+                    layout: "month_view",
+                    useSlotsViewOnSmallScreen: "true",
+                  })}
+                >
+                  Choose a time
+                </button>
+              </div>
             </div>
-            <p>Choose a time for a focused online conversation about your workflow, FinStates, or early access. Your account email is filled in automatically.</p>
-          </header>
-          <div className="account-calendar-frame">
-            <iframe
-              title="Book a 30-minute online conversation with the FinStates founder"
-              src={`https://cal.com/wei-zhou-finstates-app/30min?embed=true&layout=month_view&theme=light&email=${encodeURIComponent(data.email)}`}
-              loading="lazy"
-            />
-          </div>
-        </section>
+          </section>
 
-        <footer className="account-footer-actions">
-          <div><strong>{data.email}</strong><span>FinStates account</span></div>
-          <button className="button-secondary" type="button" disabled={busy} onClick={() => void signOut()}>Sign out</button>
-        </footer>
+          <section className="account-settings-section" aria-labelledby="account-sign-out-title">
+            <div className="account-settings-section-heading"><h2 id="account-sign-out-title">Sign out</h2></div>
+            <div className="account-settings-panel">
+              <div className="account-settings-row">
+                <div className="account-setting-copy"><strong>Sign out of this browser</strong><small>You can sign in again with your account email</small></div>
+                <button className="button-secondary account-sign-out" type="button" disabled={busy} onClick={() => void signOut()}>Sign out</button>
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
     </PageFrame>
   );
@@ -943,7 +972,7 @@ function RegistrationPage() {
               d="M320 180 C390 25 630 35 630 180 C630 325 390 335 320 180 C250 25 10 35 10 180 C10 325 250 335 320 180"
             />
             <g className="conversion-bee-orbit">
-              <animateMotion dur="12s" repeatCount="indefinite" rotate="auto">
+              <animateMotion dur="12s" repeatCount="1" rotate="auto" fill="freeze">
                 <mpath href="#registration-benefit-orbit" />
               </animateMotion>
               <g className="conversion-bee-heading" transform="rotate(45)">
