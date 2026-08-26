@@ -1,10 +1,12 @@
 import {
   StrictMode,
   createContext,
+  type CSSProperties,
   type ReactNode,
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -13,16 +15,11 @@ import Clarity from "@microsoft/clarity";
 import brandIconUrl from "./assets/icon-only.png";
 import "./design-tokens.css";
 import "./styles.css";
+import "./hero.css";
 
 const site = {
   name: "FinStates",
-  operator: "Shenzhen Little Fish Cat Technology Co., Ltd.",
   email: "support@finstates.app",
-  address: [
-    "Room 2301, Building A3, Tianfu Huafu (Zone A)",
-    "Lijin Community, Hangcheng Subdistrict, Bao'an District",
-    "Shenzhen, Guangdong 050300, China",
-  ],
 } as const;
 
 const UMAMI_WEBSITE_ID = "57595eba-4e9b-48f5-a5c9-19dba5bb8ca6";
@@ -135,17 +132,9 @@ function useAccount() {
 }
 
 const creditPacks = [
-  { name: "Small", credits: "200", price: "$19" },
-  { name: "Medium", credits: "600", price: "$50" },
-  { name: "Large", credits: "2,000", price: "$150" },
-] as const;
-
-const taskSteps = [
-  ["01", "Extract", "Read the complete report and confirm its filing scope."],
-  ["02", "Prepare", "Review tables, Concepts, values and source evidence."],
-  ["03", "Validate", "Run ACRA structure and business-rule checks."],
-  ["04", "Preview", "Inspect the exact fixed filing result before delivery."],
-  ["05", "Export", "Save the validated ACRA five-file ZIP package."],
+  { name: "Small", credits: "200", price: "$19", recommended: false },
+  { name: "Medium", credits: "600", price: "$50", recommended: true },
+  { name: "Large", credits: "2,000", price: "$150", recommended: false },
 ] as const;
 
 function syncDocumentThemeColor() {
@@ -185,7 +174,9 @@ function SiteHeader() {
     <div className="header-rail">
       <header className="site-header" data-compact={compact}>
         <a className="brand" href="/" aria-label="FinStates home">
-          <img className="brand-icon" src={brandIconUrl} alt="" />
+          <span className="brand-icon brand-icon-animated" aria-hidden="true">
+            <img className="brand-icon-bee" src={brandIconUrl} alt="" />
+          </span>
           <span>Fin<span className="brand-accent">States</span></span>
         </a>
         {!isRegistrationRoute && !isAccountRoute ? <nav className="header-actions" aria-label="Primary navigation">
@@ -235,137 +226,190 @@ function PageFrame({ children }: { children: ReactNode }) {
   );
 }
 
-function ProductWindow({ compact = false }: { compact?: boolean }) {
+function ConverterHeroVisual() {
+  const reportFacts = [
+    { label: "Entity name", value: "Northstar Holdings", period: "—", unit: "—", type: "Text" },
+    { label: "Entity identifier", value: "FS-204810", period: "—", unit: "—", type: "Identifier" },
+    { label: "Period end", value: "2025-12-31", period: "—", unit: "—", type: "Date" },
+    { label: "Reporting currency", value: "SGD", period: "FY 2025", unit: "—", type: "Currency" },
+    { label: "Total revenue", value: "3,725", period: "FY 2025", unit: "SGD 'M", type: "Monetary" },
+    { label: "Rental income", value: "1,021", period: "FY 2025", unit: "SGD 'M", type: "Monetary" },
+    { label: "Management fee income", value: "990", period: "FY 2025", unit: "SGD 'M", type: "Monetary" },
+    { label: "Revenue disclosure", value: "Disaggregated by activity", period: "FY 2025", unit: "—", type: "Text block" },
+  ] as const;
+  const factStyle = (index: number) => ({ "--delay": `${index * 1.9}s` }) as CSSProperties;
+
   return (
-    <div className={`product-window${compact ? " product-window-compact" : ""}`} aria-label="FinStates ACRA Workbench preview">
-      <div className="window-bar">
-        <div className="window-dots" aria-hidden="true"><span /><span /><span /></div>
-      </div>
-      <div className="window-body">
-        <div className="source-pane">
-          <div className="pane-heading"><strong>Source PDF</strong><span>Page 18 / 32</span></div>
-          <div className="source-document">
-            <span className="document-kicker">Note 17</span>
-            <strong>Revenue</strong>
-            <div className="document-rule" />
-            <div className="document-row"><span>Rendering of services</span><b>4,261</b></div>
-            <div className="document-row document-row-active"><span>Subscription revenue</span><b>1,842</b></div>
-            <div className="document-row"><span>Other revenue</span><b>286</b></div>
-            <div className="document-total"><span>Total</span><b>6,389</b></div>
+    <div
+      className="conversion-demo"
+      role="img"
+      aria-label="Animation showing AI converting a dense financial report note with paragraphs, comparative tables and footnotes into a clean table of structured filing facts."
+    >
+      <div className="conversion-stage" aria-hidden="true">
+        <article className="source-sheet">
+          <header className="source-running-header">
+            <strong>Notes to the Financial Statements</strong>
+            <small className="source-fact" style={factStyle(2)}>For the financial year ended 31 December 2025</small>
+          </header>
+
+          <section className="source-note">
+            <h3><b>24</b><span>Revenue</span></h3>
+            <p className="source-intro">Revenue of the Group is analysed as follows:</p>
+
+            <table className="source-note-table">
+              <thead>
+                <tr>
+                  <th />
+                  <th>The Group</th>
+                  <th className="source-fact" style={factStyle(3)}>2025<br /><small>SGD 'M</small></th>
+                  <th>2024<br /><small>SGD 'M</small></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th>Revenue from contracts with customers</th><td /><td>1,188</td><td>999</td></tr>
+                <tr className="source-fact" style={factStyle(5)}><th>Rental and related income from investment properties</th><td /><td>1,021</td><td>1,067</td></tr>
+                <tr className="source-fact" style={factStyle(6)}><th>Investment and management fee income</th><td /><td>990</td><td>801</td></tr>
+                <tr><th>Lodging management fee income</th><td /><td>316</td><td>302</td></tr>
+                <tr><th>Other operating income</th><td /><td>210</td><td>(14)</td></tr>
+                <tr className="source-total source-fact" style={factStyle(4)}><th>Total revenue</th><td /><td>3,725</td><td>3,155</td></tr>
+              </tbody>
+            </table>
+
+            <div className="source-footnotes">
+              <p className="source-fact" style={factStyle(7)}><b>(a)</b><span>Revenue is disaggregated by operating activity and the timing of recognition. Variable consideration is included only when it is highly probable that a significant reversal will not occur.</span></p>
+              <p><b>(b)</b><span>Amounts are recognised net of rebates and other directly attributable adjustments.</span></p>
+            </div>
+          </section>
+
+          <footer className="source-page-footer">
+            <span className="source-fact" style={factStyle(0)}>Northstar Holdings</span>
+            <small className="source-fact" style={factStyle(1)}>Company No. FS-204810</small>
+            <b>144</b>
+          </footer>
+        </article>
+
+        <div className="conversion-engine">
+          <div className="conversion-rotor">
+            <i className="conversion-rotor-ring" />
+            <i className="conversion-rotor-orbit" />
+            <div className="conversion-engine-word"><strong>AI</strong></div>
           </div>
-          <p className="evidence-caption"><span /> Evidence locator attached</p>
+          <small>Converter</small>
         </div>
-        <div className="task-pane">
-          <ol className="window-steps" aria-label="ACRA workflow steps">
-            {taskSteps.map(([number, label], index) => (
-              <li className={index === 2 ? "is-active" : index < 2 ? "is-complete" : ""} key={number}>
-                <span>{number}</span><small>{label}</small>
-              </li>
-            ))}
-          </ol>
-          <div className="task-summary">
-            <div><span>Validation</span><strong>Review issues</strong></div>
-            <span className="result-badge">3 checks</span>
-          </div>
-          <div className="validation-list">
-            <div><span className="check-icon">✓</span><p><strong>Taxonomy package</strong><small>ACRA 2026 release fixed</small></p></div>
-            <div><span className="check-icon">✓</span><p><strong>Calculation relationships</strong><small>No blocking inconsistency</small></p></div>
-            <div className="validation-review"><span className="review-icon">!</span><p><strong>Professional review</strong><small>One item requires confirmation</small></p></div>
-          </div>
-        </div>
+
+        <article className="filing-sheet">
+          <table className="filing-table">
+            <thead>
+              <tr><th>Fact</th><th>Value</th><th>Period</th><th>Unit</th></tr>
+            </thead>
+            <tbody>
+              {reportFacts.map((fact, index) => (
+                <tr className="filing-fact" key={fact.label} style={factStyle(index)}>
+                  <th><strong>{fact.label}</strong><small>{fact.type}</small></th>
+                  <td>{fact.value}</td>
+                  <td>{fact.period}</td>
+                  <td>{fact.unit}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </article>
       </div>
     </div>
   );
 }
 
 function Hero() {
-  const validationErrors = [
-    { label: "Out of balance", detail: "Total assets do not equal liabilities and equity" },
-    { label: "Totals do not add up", detail: "A total does not equal the sum of its underlying values" },
-    { label: "Cash flow does not tie", detail: "Closing cash does not reconcile with the statement of financial position" },
-    { label: "Wrong signs or units", detail: "A value uses the wrong sign, currency or rounding level" },
-    { label: "Missing disclosures", detail: "Required notes or mandatory fields have been left blank" },
-  ];
-  const validationChecks = [
-    { label: "ACRA Taxonomy 2026", detail: "Uses the latest ACRA taxonomy and filing entry point" },
-    { label: "Current & prior periods", detail: "Checks current-year and comparative-period coverage and consistency" },
-    { label: "Mandatory disclosures", detail: "Checks mandatory and conditionally required filing information" },
-    { label: "Calculation relationships", detail: "Checks totals, component sums and opening-to-closing movements" },
-    { label: "Cross-statement consistency", detail: "Reconciles matching facts across statements and disclosure notes" },
-  ];
+  useLayoutEffect(() => {
+    const logo = document.querySelector<HTMLElement>(".site-header .brand-icon");
+    const brand = logo?.closest<HTMLElement>(".brand");
+    const button = document.querySelector<HTMLElement>(".hero-cta");
+    if (!logo || !brand || !button) return;
+
+    const propertyNames = [
+      "--hero-bee-start-x", "--hero-bee-start-y",
+      "--hero-bee-in-1-x", "--hero-bee-in-1-y",
+      "--hero-bee-in-2-x", "--hero-bee-in-2-y",
+      "--hero-bee-in-3-x", "--hero-bee-in-3-y",
+      "--hero-bee-button-x", "--hero-bee-button-y",
+      "--hero-bee-out-1-x", "--hero-bee-out-1-y",
+      "--hero-bee-out-2-x", "--hero-bee-out-2-y",
+      "--hero-bee-out-3-x", "--hero-bee-out-3-y",
+    ] as const;
+
+    const quadraticPoint = (
+      start: readonly [number, number],
+      control: readonly [number, number],
+      end: readonly [number, number],
+      progress: number,
+    ) => {
+      const inverse = 1 - progress;
+      return [
+        (inverse * inverse * start[0]) + (2 * inverse * progress * control[0]) + (progress * progress * end[0]),
+        (inverse * inverse * start[1]) + (2 * inverse * progress * control[1]) + (progress * progress * end[1]),
+      ] as const;
+    };
+
+    const setTrajectory = () => {
+      const brandRect = brand.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      const logoCenter = [
+        brandRect.left + (logo.offsetWidth / 2),
+        brandRect.top + (brandRect.height / 2),
+      ] as const;
+      const buttonPoint = [
+        buttonRect.left + (buttonRect.width / 2) - logoCenter[0],
+        buttonRect.top - (logo.offsetHeight * 0.62) - logoCenter[1],
+      ] as const;
+      const startPoint = [
+        window.innerWidth + logo.offsetWidth - logoCenter[0],
+        Math.max(buttonPoint[1] * 0.42, logo.offsetHeight * 3),
+      ] as const;
+      const arrivalControl = [
+        (startPoint[0] + buttonPoint[0]) / 2,
+        buttonPoint[1] + Math.min(window.innerHeight * 0.22, 180),
+      ] as const;
+      const departureControl = [buttonPoint[0] * 0.48, Math.max(window.innerHeight * 0.04, 24)] as const;
+      const arrivalPoints = [0.25, 0.5, 0.75].map((progress) =>
+        quadraticPoint(startPoint, arrivalControl, buttonPoint, progress));
+      const departurePoints = [0.25, 0.5, 0.75].map((progress) =>
+        quadraticPoint(buttonPoint, departureControl, [0, 0], progress));
+      const values = [
+        ...startPoint,
+        ...arrivalPoints.flat(),
+        ...buttonPoint,
+        ...departurePoints.flat(),
+      ];
+
+      propertyNames.forEach((propertyName, index) => {
+        logo.style.setProperty(propertyName, `${values[index].toFixed(2)}px`);
+      });
+    };
+
+    setTrajectory();
+    const animationFrame = window.requestAnimationFrame(setTrajectory);
+    window.addEventListener("resize", setTrajectory);
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener("resize", setTrajectory);
+      propertyNames.forEach((propertyName) => logo.style.removeProperty(propertyName));
+    };
+  }, []);
 
   return (
-    <section className="launch-hero" id="product" aria-labelledby="page-title">
+    <section className="launch-hero hero-refined" id="product" aria-labelledby="page-title">
       <div className="page-width launch-hero-inner">
-        <div className="launch-heading">
-          <p className="audience-line">For Singapore accounting firms, accountants, and company secretaries</p>
+        <div className="launch-hero-copy">
+          <p className="hero-audience">For accounting firms, finance teams, and company secretaries</p>
           <h1 id="page-title">A new workflow for XBRL preparation.</h1>
+          <a className="launch-cta hero-cta" href="/register/">
+            Get early access
+            <svg className="hero-cta-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
         </div>
-        <div className="workflow-compare" aria-label="Two routes from financial statements to XBRL">
-          <div className="workflow-source">
-            <span aria-hidden="true">▤</span>
-            <strong>Financial statements</strong>
-          </div>
-          <div className="workflow-branch" aria-hidden="true"><i /><i /></div>
-          <div className="workflow-routes">
-            <article className="workflow-route workflow-route-legacy">
-              <header>
-                <span>Current workflow</span>
-                <h2>BizFinx Prep Tool</h2>
-              </header>
-              <ol>
-                <li><span>01</span><strong>Import Word or Excel</strong></li>
-                <li><span>02</span><strong>Map financial data</strong></li>
-                <li><span>03</span><strong>Validate</strong></li>
-                <li><span>04</span><strong>Fix and re-validate</strong></li>
-              </ol>
-              <div className="workflow-errors" aria-label="Examples of genuine errors">
-                <small>Genuine Errors</small>
-                <div className="workflow-tags">
-                  {[validationErrors.slice(0, 3), validationErrors.slice(3)].map((row, index) => (
-                    <div key={index}>
-                      {row.map((error) => (
-                        <span title={error.detail} key={error.label}>{error.label}</span>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </article>
-            <article className="workflow-route workflow-route-finstates">
-              <header>
-                <span>AI-assisted workflow</span>
-                <div className="workflow-title-line">
-                  <h2>FinStates Desktop App</h2>
-                  <div className="workflow-platforms" aria-label="Available on Windows and macOS">
-                    <b>Windows</b>
-                    <b>macOS</b>
-                  </div>
-                </div>
-              </header>
-              <ol>
-                <li data-owner="AI"><span>01</span><strong>Import signed PDF</strong></li>
-                <li data-owner="AI"><span>02</span><strong>Reconcile and validate</strong></li>
-                <li data-owner="You"><span>03</span><strong>Review exceptions</strong></li>
-                <li data-owner="You"><span>04</span><strong>Confirm adjustments</strong></li>
-              </ol>
-              <div className="workflow-checks" aria-label="Examples of validation checks passed">
-                <small>AI Validation &amp; Reconciliation</small>
-                <div className="workflow-tags">
-                  {[validationChecks.slice(0, 3), validationChecks.slice(3)].map((row, index) => (
-                    <div key={index}>
-                      {row.map((check) => (
-                        <span title={check.detail} key={check.label}>{check.label}</span>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </article>
-          </div>
-          <div className="workflow-merge" aria-hidden="true"><i /><i /></div>
-          <div className="workflow-output"><strong>XBRL</strong><span>Ready to export</span></div>
-        </div>
+        <ConverterHeroVisual />
       </div>
     </section>
   );
@@ -382,6 +426,13 @@ const productTourSteps = [
 
 type ProductTourStep = typeof productTourSteps[number]["key"];
 
+const supportedStandards = [
+  { key: "singapore", country: "Singapore", standard: "ACRA 2026", flag: "/flags/singapore.svg" },
+  { key: "malaysia", country: "Malaysia", standard: "SSM MBRS 2.0", flag: "/flags/malaysia.svg" },
+] as const;
+
+type SupportedCountry = typeof supportedStandards[number]["key"];
+
 const productTourDurations: Record<ProductTourStep, number> = {
   extract: 4200,
   setup: 3800,
@@ -391,9 +442,31 @@ const productTourDurations: Record<ProductTourStep, number> = {
   export: 4200,
 };
 
-function TourStepContent({ step }: { step: ProductTourStep }) {
+function TourStepContent({ step, country }: { step: ProductTourStep; country: SupportedCountry }) {
+  const countryConfig = country === "singapore"
+    ? {
+      entityName: "Sample Company Pte. Ltd.",
+      identifierLabel: "UEN",
+      identifierValue: "2019•••••N",
+      currency: "SGD",
+      filingWorkflow: "ACRA XBRL",
+      validationLabels: ["ACRA filing requirements", "Calculation relationships", "Current and comparative periods", "Cross-statement consistency", "Mandatory disclosures", "Units and rounding"],
+      packageName: "Singapore_Filing.zip",
+      packageFiles: ["Instance document", "Presentation", "Calculation", "Definition", "Labels"],
+    }
+    : {
+      entityName: "Sample Company Sdn. Bhd.",
+      identifierLabel: "Registration no.",
+      identifierValue: "201901••••••",
+      currency: "MYR",
+      filingWorkflow: "SSM MBRS",
+      validationLabels: ["SSM filing requirements", "Profile eligibility", "Required supporting files", "Calculation relationships", "Current and comparative periods", "Units and rounding"],
+      packageName: "Malaysia_Filing.zip",
+      packageFiles: ["XBRL ZIP", "Review copy", "Supporting-file checklist"],
+    };
+
   if (step === "extract") {
-    return <div className="tour-step-content tour-extract" key={step}>
+    return <div className="tour-step-content tour-extract" key={`${country}-${step}`}>
       <div className="tour-structure-list">
         <div><span>01</span><p><strong>Statement of financial position</strong><small>Table · 12 rows</small></p><b>Detected</b></div>
         <div><span>02</span><p><strong>Statement of profit or loss</strong><small>Table · 9 rows</small></p><b>Detected</b></div>
@@ -406,13 +479,13 @@ function TourStepContent({ step }: { step: ProductTourStep }) {
   }
 
   if (step === "setup") {
-    return <div className="tour-step-content tour-setup" key={step}>
+    return <div className="tour-step-content tour-setup" key={`${country}-${step}`}>
       <div className="tour-setup-grid">
-        <div><small>Entity name</small><strong>Sample Company Pte. Ltd.</strong></div>
-        <div><small>UEN</small><strong>2019•••••N</strong></div>
+        <div><small>Entity name</small><strong>{countryConfig.entityName}</strong></div>
+        <div><small>{countryConfig.identifierLabel}</small><strong>{countryConfig.identifierValue}</strong></div>
         <div><small>Reporting period</small><strong>31 Dec 2025</strong></div>
-        <div><small>Presentation currency</small><strong>SGD</strong></div>
-        <div><small>Filing type</small><strong>Full XBRL</strong></div>
+        <div><small>Presentation currency</small><strong>{countryConfig.currency}</strong></div>
+        <div><small>Filing workflow</small><strong>{countryConfig.filingWorkflow}</strong></div>
         <div><small>Reporting level</small><strong>Consolidated</strong></div>
       </div>
       <div className="tour-ready-card"><span>✓</span><div><strong>Ready for AI tagging</strong><small>Scope and report structure confirmed</small></div></div>
@@ -420,7 +493,7 @@ function TourStepContent({ step }: { step: ProductTourStep }) {
   }
 
   if (step === "tag") {
-    return <div className="tour-step-content tour-tag" key={step}>
+    return <div className="tour-step-content tour-tag" key={`${country}-${step}`}>
       <div className="tour-tag-head"><span>Filing item</span><span>Current year</span><span>Prior year</span><span>Status</span></div>
       <div className="tour-tag-grid">
         <div className="tour-tag-row" style={{ "--tour-delay": "400ms" } as React.CSSProperties}>
@@ -446,10 +519,10 @@ function TourStepContent({ step }: { step: ProductTourStep }) {
   }
 
   if (step === "validate") {
-    return <div className="tour-step-content tour-validate" key={step}>
+    return <div className="tour-step-content tour-validate" key={`${country}-${step}`}>
       <div className="tour-validation-summary"><span>✓</span><div><strong>Ready for preview</strong><small>No blocking issues found</small></div></div>
       <div className="tour-validation-list">
-        {["Current ACRA taxonomy", "Calculation relationships", "Current and comparative periods", "Cross-statement consistency", "Mandatory disclosures", "Units and rounding"].map((label) => (
+        {countryConfig.validationLabels.map((label) => (
           <div key={label}><span>✓</span><strong>{label}</strong><small>Passed</small></div>
         ))}
       </div>
@@ -457,9 +530,9 @@ function TourStepContent({ step }: { step: ProductTourStep }) {
   }
 
   if (step === "preview") {
-    return <div className="tour-step-content tour-preview" key={step}>
+    return <div className="tour-step-content tour-preview" key={`${country}-${step}`}>
       <div className="tour-preview-sheet">
-        <header><strong>Statement of financial position</strong><small>31 December 2025 · SGD '000</small></header>
+        <header><strong>Statement of financial position</strong><small>31 December 2025 · {countryConfig.currency} '000</small></header>
         <div><span>Assets</span><b>2025</b><b>2024</b></div>
         <p><span>Property, plant and equipment</span><b>4,820</b><b>4,260</b></p>
         <p><span>Trade and other receivables</span><b>2,148</b><b>1,996</b></p>
@@ -479,11 +552,11 @@ function TourStepContent({ step }: { step: ProductTourStep }) {
     </div>;
   }
 
-  return <div className="tour-step-content tour-export" key={step}>
+  return <div className="tour-step-content tour-export" key={`${country}-${step}`}>
     <div className="tour-package-icon"><span>ZIP</span><i>✓</i></div>
-    <strong className="tour-package-title">ACRA_2025_Filing.zip</strong>
+    <strong className="tour-package-title">{countryConfig.packageName}</strong>
     <div className="tour-package-files">
-      <span>Instance document</span><span>Presentation</span><span>Calculation</span><span>Definition</span><span>Labels</span>
+      {countryConfig.packageFiles.map((file) => <span key={file}>{file}</span>)}
     </div>
     <div className="tour-export-action">Save filing package <span>→</span></div>
   </div>;
@@ -492,10 +565,12 @@ function TourStepContent({ step }: { step: ProductTourStep }) {
 function PrinciplesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stepsRef = useRef<HTMLElement>(null);
+  const [country, setCountry] = useState<SupportedCountry>("singapore");
   const [activeStep, setActiveStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const current = productTourSteps[activeStep];
+  const presentationCurrency = country === "singapore" ? "SGD" : "MYR";
 
   useEffect(() => {
     const nav = stepsRef.current;
@@ -539,10 +614,23 @@ function PrinciplesSection() {
   return (
     <section ref={sectionRef} className="home-panel principles-panel product-tour-panel" id="principles" aria-labelledby="principles-title">
       <div className="page-width home-panel-inner product-tour-inner">
-        <header className="home-panel-heading product-tour-heading">
-          <div><p className="eyebrow">Product walkthrough</p><h2 id="principles-title">From PDF to reviewable XBRL.</h2></div>
+        <header className="standard-picker">
+          <h2 id="principles-title">From signed PDF to reviewable XBRL.</h2>
+          <div className="standard-switch" aria-label="Supported filing standards">
+            {supportedStandards.map((option) => <button
+              type="button"
+              aria-label={`${option.country} — ${option.standard}`}
+              aria-pressed={country === option.key}
+              className={`standard-option${country === option.key ? " is-active" : ""}`}
+              onClick={() => {
+                setIsAutoPlaying(false);
+                setCountry(option.key);
+              }}
+              key={option.key}
+            ><img src={option.flag} alt="" aria-hidden="true" /><strong>{option.standard}</strong></button>)}
+          </div>
         </header>
-        <div className="product-tour-window" data-step={current.key}>
+        <div className="product-tour-window" data-step={current.key} data-country={country}>
           <nav ref={stepsRef} className="product-tour-steps" aria-label="Product walkthrough steps">
             {productTourSteps.map((step, index) => <button
               type="button"
@@ -562,7 +650,7 @@ function PrinciplesSection() {
                 <div className="tour-source-heading"><h3>Note 17 · Revenue</h3></div>
                 <p className="tour-pdf-copy">Revenue recognised during the financial year comprises:</p>
                 <div className="tour-pdf-table">
-                  <div><span>SGD '000</span><b>2025</b><b>2024</b></div>
+                  <div><span>{presentationCurrency} '000</span><b>2025</b><b>2024</b></div>
                   <p className="is-section"><span>Revenue from contracts with customers</span><b>6,359</b><b>5,722</b></p>
                   <p className={`is-detail${current.key === "tag" ? " is-highlighted" : ""}`}><span>Rendering of services</span><b>4,261</b><b>3,918</b></p>
                   <p className={`is-detail${current.key === "tag" ? " is-highlighted is-second" : ""}`}><span>Subscription revenue</span><b>1,842</b><b>1,604</b></p>
@@ -573,7 +661,7 @@ function PrinciplesSection() {
                 </div>
               </div>
             </div>
-            <div className="tour-detail-pane" aria-live="polite"><TourStepContent step={current.key} /></div>
+            <div className="tour-detail-pane" aria-live="polite"><TourStepContent step={current.key} country={country} /></div>
           </div>
         </div>
       </div>
@@ -591,8 +679,9 @@ function HomePricingSection() {
         </header>
         <div className="home-price-grid" aria-label="AI Credits packs">
           {creditPacks.map((pack) => (
-            <article className="home-price-card" key={pack.name}>
+            <article className={`home-price-card${pack.recommended ? " is-recommended" : ""}`} key={pack.name}>
               <span>{pack.name}</span>
+              {pack.recommended && <span className="home-price-badge">Most popular</span>}
               <div><strong>{pack.credits}</strong><small>AI Credits</small></div>
               <p><b>{pack.price}</b><small>USD · one-time purchase</small></p>
             </article>
@@ -612,45 +701,6 @@ function HomePricingSection() {
   );
 }
 
-function MeetSection() {
-  const account = useAccount();
-
-  return (
-    <section className="home-panel meet-panel" id="meet" aria-labelledby="meet-title">
-      <div className="page-width home-panel-inner">
-        <header className="home-panel-heading meet-heading">
-          <div>
-            <p className="eyebrow">{account.status === "signed-in" ? "Meet the founder" : "Early access"}</p>
-            <h2 id="meet-title">
-              {account.status === "signed-in" ? "Book 30 minutes with the founder." : "Start exploring. Keep the conversation open."}
-            </h2>
-          </div>
-          {account.status === "signed-in" ? <span className="meet-account"><i aria-hidden="true" />{account.account.email}</span> : null}
-        </header>
-        {account.status === "loading" ? (
-          <div className="meet-loading" aria-live="polite">Checking account…</div>
-        ) : account.status === "signed-in" ? (
-          <div className="calendar-frame">
-            <iframe
-              title="Book a FinStates product conversation with the founder"
-              src={`https://cal.com/wei-zhou-finstates-app/30min?embed=true&layout=month_view&theme=light&email=${encodeURIComponent(account.account.email)}`}
-              loading="lazy"
-            />
-          </div>
-        ) : (
-          <div className="meet-gate">
-            <div className="meet-benefits" aria-label="Early access benefits">
-              <article><strong>200 Credits</strong><p>Included when you start using the Desktop app.</p></article>
-              <article><strong>Talk with the founder</strong><p>Book a 30-minute conversation anytime.</p></article>
-            </div>
-            <a className="launch-cta" href="/register/">Get early access <span aria-hidden="true">→</span></a>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
 function HomePage() {
   return (
     <PageFrame>
@@ -658,7 +708,6 @@ function HomePage() {
         <Hero />
         <PrinciplesSection />
         <HomePricingSection />
-        <MeetSection />
       </main>
     </PageFrame>
   );
@@ -677,10 +726,9 @@ function ContentPage({ label, title, children }: { label: string; title: string;
 
 function SupportPage() {
   return (
-    <ContentPage label="Contact" title="Support and company enquiries">
+    <ContentPage label="Contact" title="FinStates support">
       <p className="prose-lead">FinStates is in active development and is not yet available for public download.</p>
       <section><h2>Email</h2><p><a href={`mailto:${site.email}`}>{site.email}</a></p><p>Product, business, security and developer programme verification enquiries are welcome.</p></section>
-      <section><h2>Company</h2><p><strong>{site.operator}</strong></p><address>{site.address.map((line) => <span key={line}>{line}</span>)}</address></section>
       <section><h2>Product status</h2><p>The FinStates desktop application and its first ACRA 2026 XBRL filing workflow are under active development. Public downloads will only be linked from this website after validation, signing and publication.</p></section>
     </ContentPage>
   );
@@ -886,16 +934,32 @@ function RegistrationPage() {
     <PageFrame>
       <main id="main-content" className="conversion-page page-width">
         <section className="conversion-copy" aria-labelledby="registration-title">
-          <p className="eyebrow">Early access</p>
           <h1 id="registration-title">Join early access.</h1>
         </section>
-        <div className="conversion-benefits" aria-label="Registration benefits">
-          <article className="registration-benefit">
+        <div className="conversion-infinity" aria-label="Registration benefits">
+          <svg className="conversion-infinity-orbit" viewBox="0 0 640 360" aria-hidden="true" focusable="false">
+            <path
+              id="registration-benefit-orbit"
+              d="M320 180 C390 25 630 35 630 180 C630 325 390 335 320 180 C250 25 10 35 10 180 C10 325 250 335 320 180"
+            />
+            <g className="conversion-bee-orbit">
+              <animateMotion dur="12s" repeatCount="indefinite" rotate="auto">
+                <mpath href="#registration-benefit-orbit" />
+              </animateMotion>
+              <g className="conversion-bee-heading" transform="rotate(45)">
+                <image href={brandIconUrl} x="-30" y="-30" width="60" height="60" />
+              </g>
+            </g>
+            <g className="conversion-bee-static" transform="translate(320 48) rotate(12)">
+              <image href={brandIconUrl} x="-25" y="-25" width="50" height="50" />
+            </g>
+          </svg>
+          <article className="infinity-benefit infinity-benefit-credits">
             <strong><b>200</b><span>Credits</span></strong>
-            <p>First Desktop sign-in</p>
+            <p>Granted after your first Desktop sign-in</p>
           </article>
-          <article className="registration-benefit">
-            <strong><b>30 min</b><span>With the founder</span></strong>
+          <article className="infinity-benefit infinity-benefit-session">
+            <strong><b>30-minute</b><span>Founder session</span></strong>
             <p>Available after sign-in</p>
           </article>
         </div>
@@ -1064,7 +1128,7 @@ function PrivacyPage() {
       <section><h2>When you contact us</h2><p>If you email us, we use the contact details and message content you provide to respond, maintain necessary correspondence and protect our services. We do not sell personal information received through company correspondence.</p></section>
       <section><h2>News, tips and offers</h2><p>If you separately select news, tips and offers, we may use your email to send occasional FinStates product news, guidance and promotions. You can withdraw that choice by contacting us. Account confirmation, security and requested availability notices may still be sent as service messages.</p></section>
       <section><h2>Retention and choices</h2><p>We retain account and early access records as needed to provide the requested account, operate promotions, prevent abuse and meet legal obligations. You can ask about your information or request correction or deletion by contacting us, subject to records we must retain.</p></section>
-      <section><h2>Contact</h2><p>Questions can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p><p>{site.operator}, Shenzhen, Guangdong, China.</p></section>
+      <section><h2>Contact</h2><p>Questions can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p></section>
     </ContentPage>
   );
 }
@@ -1074,11 +1138,11 @@ function TermsPage() {
     <ContentPage label="Terms" title="Website terms of use">
       <p className="prose-meta">Last updated: 23 August 2026</p>
       <p className="prose-lead">These terms apply to the public FinStates website. Product licence terms will be provided separately when FinStates is released.</p>
-      <section><h2>Website purpose</h2><p>This website provides factual information about FinStates, its developer and its current development status. Features described as in development are not an offer, purchase commitment or promise of a release date.</p></section>
+      <section><h2>Website purpose</h2><p>This website provides factual information about FinStates and its current development status. Features described as in development are not an offer, purchase commitment or promise of a release date.</p></section>
       <section><h2>Early access registration</h2><p>Confirming your email creates a FinStates account and records your interest in early access. It does not guarantee a test invitation, product availability or a release date. Promotional Credits are subject to the amount, activation condition and validity period shown when you register.</p></section>
       <section><h2>Pricing</h2><p>Website pricing describes the current planned Credits packs. Purchases are not available until enabled in a released app. The applicable app store presents the final local price, taxes and transaction terms before purchase.</p></section>
       <section><h2>No professional advice</h2><p>Website content is general product information. It is not accounting, legal, investment, tax or filing advice and does not replace professional judgment or official guidance.</p></section>
-      <section><h2>Intellectual property</h2><p>The FinStates name, branding, website content and product materials are owned by {site.operator} or used with permission. Third-party names and standards remain the property of their respective owners.</p></section>
+      <section><h2>Intellectual property</h2><p>The FinStates name, branding, website content and product materials are protected intellectual property. Third-party names and standards remain the property of their respective owners.</p></section>
       <section><h2>Availability and changes</h2><p>We may correct, update or remove website content as the product develops. We do not guarantee uninterrupted availability of the public website.</p></section>
       <section><h2>Contact</h2><p>Questions can be sent to <a href={`mailto:${site.email}`}>{site.email}</a>.</p></section>
     </ContentPage>

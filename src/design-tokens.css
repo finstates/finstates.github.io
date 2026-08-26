@@ -17,6 +17,18 @@
   --palette-slate-200: #dce3eb;
   --palette-slate-100: #edf1f6;
   --palette-white: #ffffff;
+  --palette-red-800: #6b1d25;
+  --palette-red-600: #9b2c3a;
+  --palette-red-400: #874049;
+  --palette-red-100: #fde8ea;
+  --palette-red-050: #fef2f2;
+  --palette-green-800: #1c5e33;
+  --palette-green-600: #237747;
+  --palette-green-500: #248a3d;
+  --palette-green-400: #3d7a52;
+  --palette-green-200: #8dd79b;
+  --palette-green-100: #dff4e7;
+  --palette-green-050: #edf8ef;
 
   /* Semantic colors. */
   --color-brand-primary: var(--palette-ink-900);
@@ -40,6 +52,48 @@
   --color-focus-ring: var(--palette-gold-400);
   --color-link: var(--palette-blue-700);
   --color-link-hover: var(--palette-gold-600);
+  --color-error-primary: var(--palette-red-600);
+  --color-error-strong: var(--palette-red-800);
+  --color-error-muted: var(--palette-red-400);
+  --color-error-surface: var(--palette-red-050);
+  --color-error-soft: var(--palette-red-100);
+  --color-success-primary: var(--palette-green-600);
+  --color-success-strong: var(--palette-green-800);
+  --color-success-muted: var(--palette-green-400);
+  --color-success-surface: var(--palette-green-050);
+  --color-success-soft: var(--palette-green-100);
+
+  /* Product tour: simulated app UI palette (Apple HIG-derived). */
+  --tour-text-primary: #1d1d1f;
+  --tour-text-secondary: #3a3a3c;
+  --tour-text-muted: #6e6e73;
+  --tour-text-soft: #8e8e93;
+  --tour-surface-primary: #ffffff;
+  --tour-surface-secondary: #f7f8fa;
+  --tour-surface-tertiary: #f2f2f7;
+  --tour-border-default: #e5e5ea;
+  --tour-border-strong: #d7d7dc;
+  --tour-border-rule: #c7c7cc;
+  --tour-border-input: #d1d1d6;
+  --tour-border-divider: #ececf0;
+  --tour-border-pane: #e1e4e8;
+  --tour-accent: #007aff;
+  --tour-accent-strong: #005bbf;
+  --tour-accent-surface: #e8f2ff;
+  --tour-accent-soft: #edf5ff;
+  --tour-accent-border: #8cc5ff;
+  --tour-accent-ring: rgb(0 122 255 / 9%);
+  --tour-teal: #006f9e;
+  --tour-teal-surface: #eaf7fa;
+  --tour-link-line: #b8d9fb;
+  --tour-link-gradient: #79afe6;
+
+  /* Product tour typography. It follows the site scale; no text is below 12px. */
+  --tour-font-2xs: var(--font-size-xs);
+  --tour-font-xs: var(--font-size-xs);
+  --tour-font-sm: var(--font-size-sm);
+  --tour-font-md: var(--font-size-sm);
+  --tour-font-lg: var(--font-size-md);
 
   /* Typography. */
   --font-family-sans: "SF Pro Text", "Segoe UI Variable Text", "Segoe UI", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
@@ -51,6 +105,7 @@
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.3125rem;
   --font-size-2xl: 1.75rem;
+  --font-size-section-title: clamp(2rem, 2.8vw, 2.5rem);
   --font-size-3xl: clamp(2.25rem, 4.5vw, 3.75rem);
   --font-size-display: clamp(3.2rem, 5.4vw, 5rem);
   --font-weight-regular: 400;
@@ -87,7 +142,7 @@
   --layout-header-width-expanded: 71.25rem;
   --layout-header-width-compact: 61.25rem;
   --layout-hero-min-height: min(100svh, 63.75rem);
-  --layout-section-block: clamp(5rem, 9vw, 9rem);
+  --layout-section-block: clamp(7rem, 12vw, 12rem);
   --layout-grid-gap: clamp(2rem, 6vw, 7.5rem);
   --layout-card-gap: clamp(1rem, 2vw, 1.5rem);
   --layout-copy-max: 39rem;
