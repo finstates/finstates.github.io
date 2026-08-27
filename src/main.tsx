@@ -409,7 +409,10 @@ function Hero() {
       <div className="page-width launch-hero-inner">
         <div className="launch-hero-copy">
           <p className="hero-audience">For accounting firms, finance teams, and company secretaries</p>
-          <h1 id="page-title">AI-Assisted Desktop Software for XBRL Conversion &amp; Tagging</h1>
+          <h1 id="page-title">
+            <span className="hero-title-context">AI-Assisted Desktop Software</span>
+            <span className="hero-title-focus">XBRL Conversion &amp; Tagging</span>
+          </h1>
           <a className="launch-cta hero-cta" href="/register/">
             Get early access
             <svg className="hero-cta-icon" viewBox="0 0 24 24" aria-hidden="true">

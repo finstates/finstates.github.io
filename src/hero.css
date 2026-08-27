@@ -24,8 +24,23 @@
 }
 
 .hero-refined h1 {
+  display: grid;
   max-width: none;
-  font-size: clamp(2rem, 3vw, 3rem);
+  justify-items: center;
+  gap: clamp(0.35rem, 0.8vw, 0.65rem);
+}
+
+.hero-title-context {
+  color: rgb(255 255 255 / 72%);
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.055em;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.hero-title-focus {
+  font-size: clamp(2.65rem, 4.25vw, 4.2rem);
   letter-spacing: -0.025em;
   line-height: 1.055;
   white-space: nowrap;
@@ -449,7 +464,7 @@
   .hero-refined .hero-audience { margin-bottom: var(--space-4); }
   .hero-refined .hero-cta { margin-top: clamp(var(--space-16), 10vh, 5.5rem); }
 
-  .hero-refined h1 {
+  .hero-title-focus {
     max-width: 20ch;
     font-size: clamp(2.4rem, 6vw, 3.2rem);
     white-space: normal;
@@ -469,7 +484,8 @@
   .hero-refined .launch-hero-inner { grid-template-rows: auto auto; }
   .hero-refined .launch-hero-copy { gap: 0; }
   .hero-audience { max-width: 22rem; font-size: 0.78rem; line-height: 1.45; }
-  .hero-refined h1 { max-width: 20ch; font-size: clamp(2.1rem, 9vw, 2.8rem); letter-spacing: -0.022em; line-height: 1.065; }
+  .hero-title-context { font-size: 0.92rem; }
+  .hero-title-focus { max-width: 20ch; font-size: clamp(2.1rem, 9vw, 2.8rem); letter-spacing: -0.022em; line-height: 1.065; }
   .hero-refined .hero-cta { margin-top: var(--space-8); }
 
   .conversion-demo { min-height: 21rem; }
