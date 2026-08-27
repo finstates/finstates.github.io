@@ -409,7 +409,7 @@ function Hero() {
       <div className="page-width launch-hero-inner">
         <div className="launch-hero-copy">
           <p className="hero-audience">For accounting firms, finance teams, and company secretaries</p>
-          <h1 id="page-title">A new workflow for XBRL preparation.</h1>
+          <h1 id="page-title">AI-Assisted Desktop Software for XBRL Conversion &amp; Tagging</h1>
           <a className="launch-cta hero-cta" href="/register/">
             Get early access
             <svg className="hero-cta-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -623,7 +623,7 @@ function PrinciplesSection() {
     <section ref={sectionRef} className="home-panel principles-panel product-tour-panel" id="principles" aria-labelledby="principles-title">
       <div className="page-width home-panel-inner product-tour-inner">
         <header className="standard-picker">
-          <h2 id="principles-title">From signed PDF to reviewable XBRL.</h2>
+          <h2 id="principles-title">From signed PDFs to review-ready XBRL.</h2>
           <div className="standard-switch" aria-label="Supported filing standards">
             {supportedStandards.map((option) => <button
               type="button"

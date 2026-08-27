@@ -25,7 +25,7 @@
 
 .hero-refined h1 {
   max-width: none;
-  font-size: clamp(2.65rem, 4.25vw, 4.2rem);
+  font-size: clamp(2rem, 3vw, 3rem);
   letter-spacing: -0.025em;
   line-height: 1.055;
   white-space: nowrap;
@@ -450,7 +450,8 @@
   .hero-refined .hero-cta { margin-top: clamp(var(--space-16), 10vh, 5.5rem); }
 
   .hero-refined h1 {
-    max-width: 17ch;
+    max-width: 20ch;
+    font-size: clamp(2.4rem, 6vw, 3.2rem);
     white-space: normal;
   }
 
@@ -468,7 +469,7 @@
   .hero-refined .launch-hero-inner { grid-template-rows: auto auto; }
   .hero-refined .launch-hero-copy { gap: 0; }
   .hero-audience { max-width: 22rem; font-size: 0.78rem; line-height: 1.45; }
-  .hero-refined h1 { max-width: 12ch; font-size: clamp(2.25rem, 10.2vw, 3.15rem); letter-spacing: -0.022em; line-height: 1.065; }
+  .hero-refined h1 { max-width: 20ch; font-size: clamp(2.1rem, 9vw, 2.8rem); letter-spacing: -0.022em; line-height: 1.065; }
   .hero-refined .hero-cta { margin-top: var(--space-8); }
 
   .conversion-demo { min-height: 21rem; }
