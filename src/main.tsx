@@ -409,10 +409,18 @@ function Hero() {
       <div className="page-width launch-hero-inner">
         <div className="launch-hero-copy">
           <p className="hero-audience">For accounting firms, finance teams, and company secretaries</p>
-          <h1 id="page-title">
-            <span className="hero-title-context">AI-Assisted Desktop Software</span>
-            <span className="hero-title-focus">XBRL Conversion &amp; Tagging</span>
-          </h1>
+          <h1 className="hero-title-focus" id="page-title">XBRL Conversion &amp; Tagging</h1>
+          <div className="hero-product-meta">
+            <span className="hero-desktop-label">AI-Assisted Desktop Software</span>
+            <span className="hero-platforms" aria-label="Desktop platforms: macOS and Windows">
+              <svg className="hero-platform-icon hero-platform-apple" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 8.53 7.31c1.22.07 2.07.67 2.79.72 1.08-.22 2.11-.85 3.37-.77 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.42 4.08h-.01ZM12.03 6.36c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25Z" />
+              </svg>
+              <svg className="hero-platform-icon hero-platform-windows" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M2 4.1 11 2.85v8.65H2V4.1Zm10-1.39L22 1.3v10.2H12V2.71ZM2 12.5h9v8.65L2 19.9v-7.4Zm10 0h10v10.2l-10-1.41V12.5Z" />
+              </svg>
+            </span>
+          </div>
           <a className="launch-cta hero-cta" href="/register/">
             Get early access
             <svg className="hero-cta-icon" viewBox="0 0 24 24" aria-hidden="true">

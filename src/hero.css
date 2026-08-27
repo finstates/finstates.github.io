@@ -24,19 +24,7 @@
 }
 
 .hero-refined h1 {
-  display: grid;
   max-width: none;
-  justify-items: center;
-  gap: clamp(0.35rem, 0.8vw, 0.65rem);
-}
-
-.hero-title-context {
-  color: rgb(255 255 255 / 72%);
-  font-size: clamp(1rem, 1.35vw, 1.25rem);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 0.055em;
-  line-height: 1.3;
-  white-space: nowrap;
 }
 
 .hero-title-focus {
@@ -44,6 +32,38 @@
   letter-spacing: -0.025em;
   line-height: 1.055;
   white-space: nowrap;
+}
+
+.hero-product-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.8rem, 1.4vw, 1.15rem);
+  margin-top: clamp(0.7rem, 1.25vw, 1rem);
+  color: rgb(255 255 255 / 72%);
+  white-space: nowrap;
+}
+
+.hero-desktop-label {
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.025em;
+  line-height: 1.3;
+}
+
+.hero-platforms {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(0.65rem, 1vw, 0.9rem);
+  color: rgb(255 255 255 / 88%);
+}
+
+.hero-platform-icon {
+  display: block;
+  width: clamp(1.25rem, 1.65vw, 1.55rem);
+  height: clamp(1.25rem, 1.65vw, 1.55rem);
+  flex: 0 0 auto;
+  fill: currentColor;
 }
 
 .hero-refined .hero-cta {
@@ -484,7 +504,10 @@
   .hero-refined .launch-hero-inner { grid-template-rows: auto auto; }
   .hero-refined .launch-hero-copy { gap: 0; }
   .hero-audience { max-width: 22rem; font-size: 0.78rem; line-height: 1.45; }
-  .hero-title-context { font-size: 0.92rem; }
+  .hero-product-meta { gap: 0.7rem; margin-top: 0.75rem; }
+  .hero-desktop-label { font-size: 0.92rem; letter-spacing: 0.015em; }
+  .hero-platforms { gap: 0.55rem; }
+  .hero-platform-icon { width: 1.15rem; height: 1.15rem; }
   .hero-title-focus { max-width: 20ch; font-size: clamp(2.1rem, 9vw, 2.8rem); letter-spacing: -0.022em; line-height: 1.065; }
   .hero-refined .hero-cta { margin-top: var(--space-8); }
 
