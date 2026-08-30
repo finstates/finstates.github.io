@@ -6,7 +6,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -175,7 +174,7 @@ function SiteHeader() {
     <div className="header-rail">
       <header className="site-header" data-compact={compact}>
         <a className="brand" href="/" aria-label="FinStates home">
-          <span className="brand-icon brand-icon-animated" aria-hidden="true">
+          <span className="brand-icon brand-icon-frame" aria-hidden="true">
             <img className="brand-icon-bee" src={brandIconUrl} alt="" />
           </span>
           <span>Fin<span className="brand-accent">States</span></span>
@@ -328,82 +327,6 @@ function ConverterHeroVisual() {
 }
 
 function Hero() {
-  useLayoutEffect(() => {
-    const logo = document.querySelector<HTMLElement>(".site-header .brand-icon");
-    const brand = logo?.closest<HTMLElement>(".brand");
-    const button = document.querySelector<HTMLElement>(".hero-cta");
-    if (!logo || !brand || !button) return;
-
-    const propertyNames = [
-      "--hero-bee-start-x", "--hero-bee-start-y",
-      "--hero-bee-in-1-x", "--hero-bee-in-1-y",
-      "--hero-bee-in-2-x", "--hero-bee-in-2-y",
-      "--hero-bee-in-3-x", "--hero-bee-in-3-y",
-      "--hero-bee-button-x", "--hero-bee-button-y",
-      "--hero-bee-out-1-x", "--hero-bee-out-1-y",
-      "--hero-bee-out-2-x", "--hero-bee-out-2-y",
-      "--hero-bee-out-3-x", "--hero-bee-out-3-y",
-    ] as const;
-
-    const quadraticPoint = (
-      start: readonly [number, number],
-      control: readonly [number, number],
-      end: readonly [number, number],
-      progress: number,
-    ) => {
-      const inverse = 1 - progress;
-      return [
-        (inverse * inverse * start[0]) + (2 * inverse * progress * control[0]) + (progress * progress * end[0]),
-        (inverse * inverse * start[1]) + (2 * inverse * progress * control[1]) + (progress * progress * end[1]),
-      ] as const;
-    };
-
-    const setTrajectory = () => {
-      const brandRect = brand.getBoundingClientRect();
-      const buttonRect = button.getBoundingClientRect();
-      const logoCenter = [
-        brandRect.left + (logo.offsetWidth / 2),
-        brandRect.top + (brandRect.height / 2),
-      ] as const;
-      const buttonPoint = [
-        buttonRect.left + (buttonRect.width / 2) - logoCenter[0],
-        buttonRect.top - (logo.offsetHeight * 0.62) - logoCenter[1],
-      ] as const;
-      const startPoint = [
-        window.innerWidth + logo.offsetWidth - logoCenter[0],
-        Math.max(buttonPoint[1] * 0.42, logo.offsetHeight * 3),
-      ] as const;
-      const arrivalControl = [
-        (startPoint[0] + buttonPoint[0]) / 2,
-        buttonPoint[1] + Math.min(window.innerHeight * 0.22, 180),
-      ] as const;
-      const departureControl = [buttonPoint[0] * 0.48, Math.max(window.innerHeight * 0.04, 24)] as const;
-      const arrivalPoints = [0.25, 0.5, 0.75].map((progress) =>
-        quadraticPoint(startPoint, arrivalControl, buttonPoint, progress));
-      const departurePoints = [0.25, 0.5, 0.75].map((progress) =>
-        quadraticPoint(buttonPoint, departureControl, [0, 0], progress));
-      const values = [
-        ...startPoint,
-        ...arrivalPoints.flat(),
-        ...buttonPoint,
-        ...departurePoints.flat(),
-      ];
-
-      propertyNames.forEach((propertyName, index) => {
-        logo.style.setProperty(propertyName, `${values[index].toFixed(2)}px`);
-      });
-    };
-
-    setTrajectory();
-    const animationFrame = window.requestAnimationFrame(setTrajectory);
-    window.addEventListener("resize", setTrajectory);
-    return () => {
-      window.cancelAnimationFrame(animationFrame);
-      window.removeEventListener("resize", setTrajectory);
-      propertyNames.forEach((propertyName) => logo.style.removeProperty(propertyName));
-    };
-  }, []);
-
   return (
     <section className="launch-hero hero-refined" id="product" aria-labelledby="page-title">
       <div className="page-width launch-hero-inner">

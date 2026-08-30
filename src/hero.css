@@ -68,9 +68,6 @@
 
 .hero-refined .hero-cta {
   margin-top: 0.25rem;
-  animation: hero-brand-button-bounce 5.8s var(--ease-standard) 0.35s both;
-  transform-origin: center bottom;
-  will-change: transform;
 }
 
 .hero-cta-icon {
@@ -88,47 +85,6 @@
 .page-shell:has(.hero-refined) .site-header[data-compact="false"] .brand-icon {
   border-radius: 50%;
   box-shadow: 0 0.35rem 1rem rgb(0 0 0 / 18%);
-}
-
-.page-shell:has(.hero-refined) .site-header .brand-icon-animated {
-  animation: hero-brand-bee-arrival 5.8s linear 0.35s both;
-  transform-origin: center;
-  will-change: opacity, transform;
-}
-
-.page-shell:has(.hero-refined) .brand-icon-bee {
-  animation: hero-brand-bee-turn 5.8s linear 0.35s both;
-  transform-origin: center;
-  will-change: transform;
-}
-
-@keyframes hero-brand-bee-arrival {
-  0% { opacity: 0; transform: translate(var(--hero-bee-start-x, 94vw), var(--hero-bee-start-y, 35vh)) scale(1.25) rotate(8deg); }
-  5% { opacity: 1; }
-  7% { transform: translate(var(--hero-bee-in-1-x, 83.9vw), var(--hero-bee-in-1-y, 57.1vh)) scale(1.35) rotate(4deg); }
-  14% { transform: translate(var(--hero-bee-in-2-x, 72.8vw), var(--hero-bee-in-2-y, 70.3vh)) scale(1.45) rotate(-1deg); }
-  21% { transform: translate(var(--hero-bee-in-3-x, 60.4vw), var(--hero-bee-in-3-y, 74.6vh)) scale(1.5) rotate(-5deg); }
-  28% { transform: translate(var(--hero-bee-button-x, 47vw), var(--hero-bee-button-y, 70vh)) scale(1.5) rotate(0); }
-  40% { transform: translate(var(--hero-bee-button-x, 47vw), calc(var(--hero-bee-button-y, 70vh) + 2.1rem)) scale(1.5) rotate(0); }
-  50% { transform: translate(var(--hero-bee-button-x, 47vw), calc(var(--hero-bee-button-y, 70vh) - 1rem)) scale(1.5) rotate(0); }
-  58%, 64% { transform: translate(var(--hero-bee-button-x, 47vw), var(--hero-bee-button-y, 70vh)) scale(1.5) rotate(0); }
-  70% { transform: translate(var(--hero-bee-out-1-x, 34.7vw), var(--hero-bee-out-1-y, 42.4vh)) scale(1.4) rotate(7deg); }
-  76% { transform: translate(var(--hero-bee-out-2-x, 22.8vw), var(--hero-bee-out-2-y, 21.5vh)) scale(1.3) rotate(5deg); }
-  82% { transform: translate(var(--hero-bee-out-3-x, 11.2vw), var(--hero-bee-out-3-y, 7.4vh)) scale(1.15) rotate(-2deg); }
-  88%, 100% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0); }
-}
-
-@keyframes hero-brand-bee-turn {
-  0%, 92% { transform: scaleX(-1); }
-  96% { transform: scaleX(0); }
-  100% { transform: scaleX(1); }
-}
-
-@keyframes hero-brand-button-bounce {
-  0%, 28% { transform: translateY(0) scale(1); }
-  40% { transform: translateY(1.55rem) scaleX(1.07) scaleY(0.82); }
-  50% { transform: translateY(-0.8rem) scaleX(0.975) scaleY(1.06); }
-  58%, 100% { transform: translateY(0) scale(1); }
 }
 
 .conversion-demo {
@@ -556,10 +512,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page-shell:has(.hero-refined) .brand-icon { animation: none; }
-  .page-shell:has(.hero-refined) .brand-icon-bee { animation: none; }
-  .hero-refined .hero-cta { animation: none; }
-
   .source-fact,
   .filing-fact,
   .conversion-rotor::before,
